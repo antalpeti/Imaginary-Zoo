@@ -24,4 +24,9 @@ public class Column {
     this.column = column;
     this.value = value;
   }
+
+  @Override
+  public String toString() {
+    return column + " : " + value;
+  }
 }

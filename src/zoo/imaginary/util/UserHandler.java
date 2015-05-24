@@ -10,13 +10,13 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class UserHandler extends DefaultHandler {
 
-  boolean prop = false;
-  String upgroup;
-  String midgroup;
-  String subgroup;
-  String property;
-  Row row;
-  List<Row> rows;
+  private boolean prop = false;
+  private String upgroup;
+  private String midgroup;
+  private String subgroup;
+  private String property;
+  private Row row;
+  private List<Row> rows;
 
   public UserHandler() {
     rows = new ArrayList<Row>();
@@ -52,7 +52,7 @@ public class UserHandler extends DefaultHandler {
   @Override
   public void endElement(String uri, String localName, String qName) throws SAXException {
     if (qName.equalsIgnoreCase("entity")) {
-      rows.add(row);
+      getRows().add(row);
     }
   }
 
@@ -64,5 +64,9 @@ public class UserHandler extends DefaultHandler {
       // System.out.println(" : " + value);
       prop = false;
     }
+  }
+
+  public List<Row> getRows() {
+    return rows;
   }
 }

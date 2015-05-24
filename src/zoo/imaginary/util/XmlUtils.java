@@ -1,6 +1,7 @@
 package zoo.imaginary.util;
 
 import java.io.File;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,20 +18,25 @@ import org.w3c.dom.NodeList;
 public class XmlUtils {
 
   public static void main(String[] args) {
-    parseXmlFileBySax("database.xml");
+    List<Row> rows = parseXmlFileBySax("database.xml");
+    for (Row row : rows) {
+      System.out.println(row);
+    }
     // parseXmlFileByDom("database.xml");
   }
 
-  public static void parseXmlFileBySax(String filePath) {
+  public static List<Row> parseXmlFileBySax(String filePath) {
+    UserHandler userhandler = null;
     try {
       File inputFile = new File(filePath);
       SAXParserFactory factory = SAXParserFactory.newInstance();
       SAXParser saxParser = factory.newSAXParser();
-      UserHandler userhandler = new UserHandler();
+      userhandler = new UserHandler();
       saxParser.parse(inputFile, userhandler);
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return userhandler.getRows();
   }
 
   public static void parseXmlFileByDom(String filePath) {

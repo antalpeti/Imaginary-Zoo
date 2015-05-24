@@ -1,6 +1,7 @@
 package zoo.imaginary.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Row {
@@ -16,5 +17,10 @@ public class Row {
 
   public void setColumns(List<Column> columns) {
     this.columns = columns;
+  }
+
+  @Override
+  public String toString() {
+    return Arrays.toString(columns.toArray());
   }
 }
