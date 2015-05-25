@@ -10,6 +10,23 @@
 					<property name="origin">United States of America</property>
 				</entity>
 			</subgroup>
+			<subgroup name="cats">
+				<entity name="Maine Coon">
+					<property name="mass">7.7 kg</property>
+					<property name="length">1 m</property>
+					<property name="color">brown</property>
+					<property name="origin">United States of America</property>
+				</entity>
+			</subgroup>
+			<subgroup name="dogs">
+				<entity name="German Speherd">
+					<property name="lifespan">11 years</property>
+					<property name="mass">30 - 40 kg</property>
+					<property name="origin">Germany</property>
+					<property name="heigh">60 - 65 cm</property>
+					<property name="color">brown</property>
+				</entity>
+			</subgroup>
 			<subgroup name="dogs">
 				<entity name="German Speherd">
 					<property name="lifespan">11 years</property>

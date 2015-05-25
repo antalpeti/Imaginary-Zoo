@@ -10,6 +10,7 @@ import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -17,23 +18,28 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
 
 import zoo.imaginary.util.ContentFilter;
+import zoo.imaginary.util.FileUtils;
 
 public class MainWindow {
 
   private JFrame frame;
   private JTable table;
   private JTextArea log;
-  static private final String newline = "\n";
   JFileChooser fc;
   private JButton btnOpen;
   private JButton btnAddColumn;
-  private JPanel selectionPanel;
+  private JPanel controlPanel;
   private JCheckBox chckbxRowSelection;
   private JCheckBox chckbxColumnSelection;
-  private JCheckBox chckbxCellSelection;
+  private JPanel searchPanel;
+  private JTextField txtSearch;
+  private JComboBox searchComboBox;
+  private JButton btnSearch;
+  private JPanel logPanel;
 
   /**
    * Launch the application.
@@ -64,41 +70,85 @@ public class MainWindow {
    * Initialize the contents of the frame.
    */
   private void initialize() {
+
+    createFrame();
+
+    createSearchPanel();
+
+    createTable();
+
+    createBottomPanel();
+
+    createControlPanel();
+
+  }
+
+  /**
+   * Create table with scroll pane.
+   */
+  protected void createTable() {
+    table = new JTable();
+    JScrollPane tScrollPane = new JScrollPane(table);
+    frame.getContentPane().add(tScrollPane, BorderLayout.CENTER);
+  }
+
+  /**
+   * Create frame.
+   */
+  private void createFrame() {
     frame = new JFrame();
     frame.setTitle("Imaginary Zoo Database");
     frame.setBounds(100, 100, 698, 512);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  }
 
-    table = new JTable();
-    JScrollPane tScrollPane = new JScrollPane(table);
-    frame.getContentPane().add(tScrollPane, BorderLayout.CENTER);
+  /**
+   * Create the search panel and its widgets.
+   */
+  private void createSearchPanel() {
+    searchPanel = new JPanel();
+    frame.getContentPane().add(searchPanel, BorderLayout.NORTH);
+    searchPanel.setLayout(new GridLayout(0, 3, 0, 0));
 
-    JPanel bottomPanel = new JPanel();
-    frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-    bottomPanel.setLayout(new GridLayout(0, 1, 0, 0));
+    // Search text
+    txtSearch = new JTextField();
+    txtSearch.setToolTipText("");
+    searchPanel.add(txtSearch);
 
-    JPanel buttonPanel = new JPanel();
-    bottomPanel.add(buttonPanel);
-    buttonPanel.setLayout(new GridLayout(0, 2, 0, 0));
+    // Search checkbox
+    searchComboBox = new JComboBox();
+    searchPanel.add(searchComboBox);
 
-    btnOpen = new JButton("Open");
-    buttonPanel.add(btnOpen);
-    btnOpen.setIcon(new ImageIcon(MainWindow.class
-        .getResource("/zoo/imaginary/control/images/Open16.gif")));
+    // Search button
+    btnSearch = new JButton("Search");
+    searchPanel.add(btnSearch);
+  }
 
+  /**
+   * Create the control panel and its widgets.
+   */
+  private void createControlPanel() {
+    controlPanel = new JPanel();
+    frame.getContentPane().add(controlPanel, BorderLayout.EAST);
+    controlPanel.setLayout(new GridLayout(0, 1, 0, 0));
+
+    // Add button
     btnAddColumn = new JButton("Add Column");
     btnAddColumn.setEnabled(false);
-    buttonPanel.add(btnAddColumn);
+    btnAddColumn.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (table.getModel().getColumnCount() != 0) {
+          String columnName = JOptionPane.showInputDialog("Please enter the column name: ");
+          TableColumn tableColumn = new TableColumn();
+          tableColumn.setHeaderValue(columnName);
+          table.getColumnModel().addColumn(tableColumn);
+        }
+      }
+    });
+    controlPanel.add(btnAddColumn);
 
-    log = new JTextArea();
-    log.setEditable(false);
-    JScrollPane taScrollPane = new JScrollPane(log);
-    bottomPanel.add(taScrollPane);
-
-    selectionPanel = new JPanel();
-    frame.getContentPane().add(selectionPanel, BorderLayout.EAST);
-    selectionPanel.setLayout(new GridLayout(0, 1, 0, 0));
-
+    // Row Selection checkbox
     chckbxRowSelection = new JCheckBox("Row Selection");
     chckbxRowSelection.setSelected(true);
     chckbxRowSelection.addActionListener(new ActionListener() {
@@ -108,8 +158,9 @@ public class MainWindow {
       }
     });
     chckbxRowSelection.setEnabled(false);
-    selectionPanel.add(chckbxRowSelection);
+    controlPanel.add(chckbxRowSelection);
 
+    // Column Selection checkbox
     chckbxColumnSelection = new JCheckBox("Column Selection");
     chckbxColumnSelection.addActionListener(new ActionListener() {
       @Override
@@ -118,64 +169,68 @@ public class MainWindow {
       }
     });
     chckbxColumnSelection.setEnabled(false);
-    selectionPanel.add(chckbxColumnSelection);
+    controlPanel.add(chckbxColumnSelection);
+  }
 
-    chckbxCellSelection = new JCheckBox("Cell Selection");
-    chckbxCellSelection.addActionListener(new ActionListener() {
+  /**
+   * Create bottom panel with buttons and log.
+   */
+  protected void createBottomPanel() {
+    JPanel bottomPanel = new JPanel();
+    frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
+    bottomPanel.setLayout(new GridLayout(2, 1, 0, 0));
+
+
+    JPanel buttonPanel = new JPanel();
+    bottomPanel.add(buttonPanel);
+    buttonPanel.setLayout(new GridLayout(0, 1, 0, 0));
+
+    // Open button
+    btnOpen = new JButton("Open");
+    buttonPanel.add(btnOpen);
+    btnOpen.setIcon(new ImageIcon(MainWindow.class
+        .getResource("/zoo/imaginary/control/images/Open16.gif")));
+
+    // Log scroll pane
+    log = new JTextArea();
+    log.setEditable(false);
+    JScrollPane taScrollPane = new JScrollPane(log);
+    bottomPanel.add(taScrollPane);
+
+    btnOpen.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        table.setCellSelectionEnabled(chckbxCellSelection.isSelected());
+        TableModel model = null;
+        if (fc == null) {
+          fc = new JFileChooser();
+          fc.addChoosableFileFilter(new ContentFilter());
+          fc.setAcceptAllFileFilterUsed(true);
+          File currentDirectory = new File(".");
+          fc.setCurrentDirectory(currentDirectory);
+          fc.setDialogTitle("Open Database");
+        }
+
+        int returnVal = fc.showOpenDialog(frame);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          File file = fc.getSelectedFile();
+          // This is where a real application would open the file.
+          log.append("Opening: " + file.getName() + "." + "\n");
+          model = new TableModel(file, FileUtils.getExtension(file));
+          table.setModel(model);
+
+          // Enable/Disable widgets of the control panel
+          boolean tableIsEmpty = table.getColumnCount() == 0;
+          chckbxRowSelection.setEnabled(!tableIsEmpty);
+          chckbxColumnSelection.setEnabled(!tableIsEmpty);
+          btnAddColumn.setEnabled(!tableIsEmpty);
+        } else {
+          log.append("Open command cancelled by user." + "\n");
+        }
+        log.setCaretPosition(log.getDocument().getLength());
+
       }
     });
-    chckbxCellSelection.setEnabled(false);
-    selectionPanel.add(chckbxCellSelection);
-
-    ActionListener buttonsActionListener = new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        TableModel model = null;
-
-        if (e.getSource() == btnOpen) {
-          if (fc == null) {
-            fc = new JFileChooser();
-            fc.addChoosableFileFilter(new ContentFilter());
-            fc.setAcceptAllFileFilterUsed(true);
-            File currentDirectory = new File(".");
-            fc.setCurrentDirectory(currentDirectory);
-            fc.setDialogTitle("Open Database");
-          }
-
-          int returnVal = fc.showOpenDialog(frame);
-
-          if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            // This is where a real application would open the file.
-            log.append("Opening: " + file.getName() + "." + newline);
-            model = new TableModel(file);
-            table.setModel(model);
-            boolean tableIsEmpty = table.getColumnCount() == 0;
-            chckbxRowSelection.setEnabled(!tableIsEmpty);
-            chckbxColumnSelection.setEnabled(!tableIsEmpty);
-            chckbxCellSelection.setEnabled(!tableIsEmpty);
-            btnAddColumn.setEnabled(!tableIsEmpty);
-          } else {
-            log.append("Open command cancelled by user." + newline);
-          }
-          log.setCaretPosition(log.getDocument().getLength());
-        } else if (e.getSource() == btnAddColumn) {
-          if (table.getModel().getColumnCount() != 0) {
-            String columnName = JOptionPane.showInputDialog("Please enter the column name: ");
-            TableColumn tableColumn = new TableColumn();
-            tableColumn.setHeaderValue(columnName);
-            table.getColumnModel().addColumn(tableColumn);
-          }
-        }
-      }
-    };
-    btnOpen.addActionListener(buttonsActionListener);
-    btnAddColumn.addActionListener(buttonsActionListener);
   }
 
 }

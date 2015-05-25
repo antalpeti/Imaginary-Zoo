@@ -1,7 +1,16 @@
 package zoo.imaginary.util;
 
+/**
+ * Represent a tag from the xml, or a column from the cvs file.
+ */
 public class Column {
+  /**
+   * Tag name or attribute name from the xml or column name from the csv.
+   */
   private String name;
+  /**
+   * Atribute name or content from the xml or column data from the csv.
+   */
   private String data;
 
   public String getName() {

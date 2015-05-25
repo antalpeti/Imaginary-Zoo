@@ -8,6 +8,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * Responsible to read the structured xml files.
+ */
 public class UserHandler extends DefaultHandler {
 
   private boolean prop = false;
@@ -27,13 +30,10 @@ public class UserHandler extends DefaultHandler {
       throws SAXException {
     if (qName.equalsIgnoreCase("upgroup")) {
       upgroup = attributes.getValue("name");
-      // System.out.println("upgroup : " + attributes.getValue("name"));
     } else if (qName.equalsIgnoreCase("midgroup")) {
       midgroup = attributes.getValue("name");
-      // System.out.println("midgroup : " + attributes.getValue("name"));
     } else if (qName.equalsIgnoreCase("subgroup")) {
       subgroup = attributes.getValue("name");
-      // System.out.println("subgroup : " + attributes.getValue("name"));
     } else if (qName.equalsIgnoreCase("entity")) {
       String entity = attributes.getValue("name");
       row = new Row();
@@ -41,10 +41,8 @@ public class UserHandler extends DefaultHandler {
       row.getColumns().add(new Column("midgroup", midgroup));
       row.getColumns().add(new Column("subgroup", subgroup));
       row.getColumns().add(new Column("entity", entity));
-      // System.out.println("entity : " + attributes.getValue("name"));
     } else if (qName.equalsIgnoreCase("property")) {
       property = attributes.getValue("name");
-      // System.out.print("property : " + attributes.getValue("name"));
       prop = true;
     }
   }
@@ -61,7 +59,6 @@ public class UserHandler extends DefaultHandler {
     if (prop) {
       String value = new String(ch, start, length);
       row.getColumns().add(new Column(property, value));
-      // System.out.println(" : " + value);
       prop = false;
     }
   }

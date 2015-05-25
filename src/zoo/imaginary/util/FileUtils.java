@@ -11,15 +11,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 public class FileUtils {
 
-  public static void main(String[] args) {
-    List<Row> rows = parseXmlFileBySax(new File("database.xml"));
-    for (Row row : rows) {
-      System.out.println(row);
-    }
-    List<String> columns = findAllColumnNames(rows);
-    System.out.println(columns);
-  }
-
   /**
    * Parse the content of the xml file and arrange into rows.
    *
@@ -39,8 +30,8 @@ public class FileUtils {
     return userhandler.getRows();
   }
 
-  public final static String xml = "xml";
-  public final static String csv = "csv";
+  public final static String XML = "xml";
+  public final static String CSV = "csv";
 
   /**
    * Get the extension of a file.

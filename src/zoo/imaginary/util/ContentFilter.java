@@ -4,6 +4,9 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * This file responsible to see only xml or csv files in the FileChooser window.
+ */
 public class ContentFilter extends FileFilter {
 
   @Override
@@ -14,7 +17,7 @@ public class ContentFilter extends FileFilter {
 
     String extension = FileUtils.getExtension(f);
     if (extension != null) {
-      if (extension.equals(FileUtils.xml)) {
+      if (extension.equals(FileUtils.XML) || extension.equals(FileUtils.CSV)) {
         return true;
       } else {
         return false;

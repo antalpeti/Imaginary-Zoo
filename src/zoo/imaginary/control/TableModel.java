@@ -12,17 +12,19 @@ public class TableModel extends AbstractTableModel {
   List<String> columnNames;
   String[][] tableData;
 
-  public TableModel(File file) {
-    List<Row> rows = FileUtils.parseXmlFileBySax(file);
-    columnNames = FileUtils.findAllColumnNames(rows);
-    tableData = new String[rows.size()][columnNames.size()];
-    for (int i = 0; i < rows.size(); i++) {
-      String[] cHeaders = rows.get(i).getColumnNames();
-      String[] cContents = rows.get(i).getColumnDatas();
-      for (int j = 0; j < columnNames.size(); j++) {
-        for (int k = 0; k < cHeaders.length; k++) {
-          if (cHeaders[k].equals(columnNames.get(j))) {
-            tableData[i][j] = cContents[k];
+  public TableModel(File file, String extension) {
+    if (extension.equals(FileUtils.XML)) {
+      List<Row> rows = FileUtils.parseXmlFileBySax(file);
+      columnNames = FileUtils.findAllColumnNames(rows);
+      tableData = new String[rows.size()][columnNames.size()];
+      for (int i = 0; i < rows.size(); i++) {
+        String[] cHeaders = rows.get(i).getColumnNames();
+        String[] cContents = rows.get(i).getColumnDatas();
+        for (int j = 0; j < columnNames.size(); j++) {
+          for (int k = 0; k < cHeaders.length; k++) {
+            if (cHeaders[k].equals(columnNames.get(j))) {
+              tableData[i][j] = cContents[k];
+            }
           }
         }
       }
