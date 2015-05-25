@@ -9,25 +9,30 @@ import java.util.Set;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class XmlUtils {
+public class FileUtils {
 
   public static void main(String[] args) {
-    List<Row> rows = parseXmlFileBySax("database.xml");
+    List<Row> rows = parseXmlFileBySax(new File("database.xml"));
     for (Row row : rows) {
       System.out.println(row);
     }
-    String[] columns = findAllColumns(rows);
+    String[] columns = findAllColumnNames(rows);
     System.out.println(Arrays.toString(columns));
   }
 
-  public static List<Row> parseXmlFileBySax(String filePath) {
+  /**
+   * Parse the content of the xml file and arrange into rows.
+   *
+   * @param file the file path of the xml file
+   * @return the content of the xml file arranged into rows
+   */
+  public static List<Row> parseXmlFileBySax(File file) {
     UserHandler userhandler = null;
     try {
-      File inputFile = new File(filePath);
       SAXParserFactory factory = SAXParserFactory.newInstance();
       SAXParser saxParser = factory.newSAXParser();
       userhandler = new UserHandler();
-      saxParser.parse(inputFile, userhandler);
+      saxParser.parse(file, userhandler);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -37,8 +42,11 @@ public class XmlUtils {
   public final static String xml = "xml";
   public final static String csv = "csv";
 
-  /*
+  /**
    * Get the extension of a file.
+   *
+   * @param f the examined file
+   * @return the extension of the examined file
    */
   public static String getExtension(File f) {
     String ext = null;
@@ -51,13 +59,18 @@ public class XmlUtils {
     return ext;
   }
 
-
-  public static String[] findAllColumns(List<Row> rows) {
+  /**
+   * Search through all the rows and collect all the header of the columns.
+   *
+   * @param rows all the rows of the table
+   * @return all the header of the columns of the table
+   */
+  public static String[] findAllColumnNames(List<Row> rows) {
     Set<String> columns = new HashSet<>();
     for (Row row : rows) {
       for (Column column : row.getColumns()) {
-        if (!columns.contains(column.getColumn())) {
-          columns.add(column.getColumn());
+        if (!columns.contains(column.getName())) {
+          columns.add(column.getName());
         }
       }
     }

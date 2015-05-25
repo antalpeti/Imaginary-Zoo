@@ -12,9 +12,9 @@ public class ContentFilter extends FileFilter {
       return true;
     }
 
-    String extension = XmlUtils.getExtension(f);
+    String extension = FileUtils.getExtension(f);
     if (extension != null) {
-      if (extension.equals(XmlUtils.xml)) {
+      if (extension.equals(FileUtils.xml)) {
         return true;
       } else {
         return false;

@@ -1,32 +1,32 @@
 package zoo.imaginary.util;
 
 public class Column {
-  private String column;
-  private String value;
+  private String name;
+  private String data;
 
-  public String getColumn() {
-    return column;
+  public String getName() {
+    return name;
   }
 
-  public void setColumn(String column) {
-    this.column = column;
+  public void setNames(String header) {
+    this.name = header;
   }
 
-  public String getValue() {
-    return value;
+  public String getData() {
+    return data;
   }
 
-  public void setValue(String value) {
-    this.value = value;
+  public void setData(String data) {
+    this.data = data;
   }
 
-  public Column(String column, String value) {
-    this.column = column;
-    this.value = value;
+  public Column(String name, String data) {
+    this.name = name;
+    this.data = data;
   }
 
   @Override
   public String toString() {
-    return column + " : " + value;
+    return name + " : " + data;
   }
 }

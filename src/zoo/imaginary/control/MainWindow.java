@@ -2,7 +2,6 @@ package zoo.imaginary.control;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 
@@ -50,6 +50,7 @@ public class MainWindow {
     initialize();
   }
 
+
   /**
    * Initialize the contents of the frame.
    */
@@ -58,12 +59,9 @@ public class MainWindow {
     frame.setBounds(100, 100, 698, 512);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    JPanel tablePanel = new JPanel();
-    frame.getContentPane().add(tablePanel, BorderLayout.CENTER);
-    tablePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-
     table = new JTable();
-    tablePanel.add(table);
+    JScrollPane tScrollPane = new JScrollPane(table);
+    frame.getContentPane().add(tScrollPane, BorderLayout.CENTER);
 
     JPanel bottomPanel = new JPanel();
     frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
@@ -79,8 +77,9 @@ public class MainWindow {
         .getResource("/zoo/imaginary/control/images/Open16.gif")));
 
     log = new JTextArea();
-    log.setEnabled(false);
-    bottomPanel.add(log);
+    log.setEditable(false);
+    JScrollPane taScrollPane = new JScrollPane(log);
+    bottomPanel.add(taScrollPane);
 
 
     btnOpen.addActionListener(new ActionListener() {
@@ -97,11 +96,12 @@ public class MainWindow {
 
         int returnVal = fc.showOpenDialog(frame);
 
-
         if (returnVal == JFileChooser.APPROVE_OPTION) {
           File file = fc.getSelectedFile();
           // This is where a real application would open the file.
           log.append("Opening: " + file.getName() + "." + newline);
+          TableModel model = new TableModel(file);
+          table.setModel(model);
         } else {
           log.append("Open command cancelled by user." + newline);
         }
