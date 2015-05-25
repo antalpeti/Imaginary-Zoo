@@ -1,7 +1,7 @@
 package zoo.imaginary.util;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,8 +16,8 @@ public class FileUtils {
     for (Row row : rows) {
       System.out.println(row);
     }
-    String[] columns = findAllColumnNames(rows);
-    System.out.println(Arrays.toString(columns));
+    List<String> columns = findAllColumnNames(rows);
+    System.out.println(columns);
   }
 
   /**
@@ -65,7 +65,7 @@ public class FileUtils {
    * @param rows all the rows of the table
    * @return all the header of the columns of the table
    */
-  public static String[] findAllColumnNames(List<Row> rows) {
+  public static List<String> findAllColumnNames(List<Row> rows) {
     Set<String> columns = new HashSet<>();
     for (Row row : rows) {
       for (Column column : row.getColumns()) {
@@ -74,6 +74,8 @@ public class FileUtils {
         }
       }
     }
-    return columns.toArray(new String[columns.size()]);
+    List<String> list = new ArrayList<String>();
+    list.addAll(columns);
+    return list;
   }
 }

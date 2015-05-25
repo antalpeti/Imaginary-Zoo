@@ -9,19 +9,19 @@ import zoo.imaginary.util.FileUtils;
 import zoo.imaginary.util.Row;
 
 public class TableModel extends AbstractTableModel {
-  String[] columnNames;
+  List<String> columnNames;
   String[][] tableData;
 
   public TableModel(File file) {
     List<Row> rows = FileUtils.parseXmlFileBySax(file);
     columnNames = FileUtils.findAllColumnNames(rows);
-    tableData = new String[rows.size()][columnNames.length];
+    tableData = new String[rows.size()][columnNames.size()];
     for (int i = 0; i < rows.size(); i++) {
       String[] cHeaders = rows.get(i).getColumnNames();
       String[] cContents = rows.get(i).getColumnDatas();
-      for (int j = 0; j < columnNames.length; j++) {
+      for (int j = 0; j < columnNames.size(); j++) {
         for (int k = 0; k < cHeaders.length; k++) {
-          if (cHeaders[k].equals(columnNames[j])) {
+          if (cHeaders[k].equals(columnNames.get(j))) {
             tableData[i][j] = cContents[k];
           }
         }
@@ -29,14 +29,18 @@ public class TableModel extends AbstractTableModel {
     }
   }
 
+  public void addColumn(String columnName) {
+    columnNames.add(columnName);
+  }
+
   @Override
   public String getColumnName(int col) {
-    return columnNames[col];
+    return columnNames.get(col);
   }
 
   @Override
   public int getColumnCount() {
-    return columnNames.length;
+    return columnNames.size();
   }
 
   @Override
