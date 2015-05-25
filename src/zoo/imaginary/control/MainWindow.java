@@ -40,6 +40,9 @@ public class MainWindow {
   private JComboBox searchComboBox;
   private JButton btnSearch;
   private JPanel logPanel;
+  private JButton btnDeleteColumn;
+  private JButton btnDeleteRow;
+  private JButton btnAddRow;
 
   /**
    * Launch the application.
@@ -148,6 +151,57 @@ public class MainWindow {
     });
     controlPanel.add(btnAddColumn);
 
+    // Delete Column button
+    btnDeleteColumn = new JButton("Delete Column");
+    btnDeleteColumn.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (table.getSelectedColumn() != -1) {
+          int[] selectedColumns = table.getSelectedColumns();
+          String[] deletableColumnNames = new String[selectedColumns.length];
+          for (int i = 0; i < selectedColumns.length; i++) {
+            deletableColumnNames[i] = table.getColumnName(selectedColumns[i]);
+          }
+          ((TableModel) table.getModel()).deleteColumns(deletableColumnNames);
+          enableDisableColumnControls();
+        } else {
+          JOptionPane.showMessageDialog(frame, "Please select a column.", "Deletion warning",
+              JOptionPane.WARNING_MESSAGE);
+        }
+      }
+    });
+
+    // Add Row button
+    btnAddRow = new JButton("Add Row");
+    btnAddRow.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        // TODO implement the logic
+      }
+    });
+    btnAddRow.setEnabled(false);
+    controlPanel.add(btnAddRow);
+    btnDeleteColumn.setEnabled(false);
+    controlPanel.add(btnDeleteColumn);
+
+    // Delete Row button
+    btnDeleteRow = new JButton("Delete Row");
+    btnDeleteRow.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (table.getSelectedRow() != -1) {
+          int[] selectedRows = table.getSelectedRows();
+          ((TableModel) table.getModel()).deleteRows(selectedRows);
+          enableDisableRowControls();
+        } else {
+          JOptionPane.showMessageDialog(frame, "Please select a row.", "Deletion warning",
+              JOptionPane.WARNING_MESSAGE);
+        }
+      }
+    });
+    btnDeleteRow.setEnabled(false);
+    controlPanel.add(btnDeleteRow);
+
     // Row Selection checkbox
     chckbxRowSelection = new JCheckBox("Row Selection");
     chckbxRowSelection.setSelected(true);
@@ -157,6 +211,7 @@ public class MainWindow {
         table.setRowSelectionAllowed(chckbxRowSelection.isSelected());
       }
     });
+
     chckbxRowSelection.setEnabled(false);
     controlPanel.add(chckbxRowSelection);
 
@@ -219,18 +274,41 @@ public class MainWindow {
           model = new TableModel(file, FileUtils.getExtension(file));
           table.setModel(model);
 
-          // Enable/Disable widgets of the control panel
-          boolean tableIsEmpty = table.getColumnCount() == 0;
-          chckbxRowSelection.setEnabled(!tableIsEmpty);
-          chckbxColumnSelection.setEnabled(!tableIsEmpty);
-          btnAddColumn.setEnabled(!tableIsEmpty);
+          enableDisableColumnControls();
         } else {
           log.append("Open command cancelled by user." + "\n");
         }
         log.setCaretPosition(log.getDocument().getLength());
 
       }
+
     });
+  }
+
+  /**
+   * Enable or disable the control widgets according to the column content of the table.
+   */
+  private void enableDisableColumnControls() {
+    // Enable/Disable widgets of the control panel
+    boolean tableIsEmpty = table.getColumnCount() == 0;
+    btnAddColumn.setEnabled(!tableIsEmpty);
+    btnDeleteColumn.setEnabled(!tableIsEmpty);
+    btnDeleteRow.setEnabled(!tableIsEmpty);
+    chckbxRowSelection.setEnabled(!tableIsEmpty);
+    chckbxColumnSelection.setEnabled(!tableIsEmpty);
+  }
+
+  /**
+   * Enable or disable the control widgets according to the row content of the table.
+   */
+  private void enableDisableRowControls() {
+    // Enable/Disable widgets of the control panel
+    boolean tableIsEmpty = table.getColumnCount() > 0 && table.getRowCount() <= 1;
+    btnAddColumn.setEnabled(!tableIsEmpty);
+    btnDeleteColumn.setEnabled(!tableIsEmpty);
+    btnDeleteRow.setEnabled(!tableIsEmpty);
+    chckbxRowSelection.setEnabled(!tableIsEmpty);
+    chckbxColumnSelection.setEnabled(!tableIsEmpty);
   }
 
 }
