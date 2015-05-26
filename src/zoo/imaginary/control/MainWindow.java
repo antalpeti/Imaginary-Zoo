@@ -19,7 +19,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.table.TableColumn;
 
 import zoo.imaginary.util.ContentFilter;
 import zoo.imaginary.util.FileUtils;
@@ -31,7 +30,7 @@ public class MainWindow {
   private JTextArea log;
   JFileChooser fc;
   private JButton btnOpen;
-  private JButton btnAddColumn;
+  private JButton btnAddProperty;
   private JPanel controlPanel;
   private JCheckBox chckbxRowSelection;
   private JCheckBox chckbxColumnSelection;
@@ -40,9 +39,9 @@ public class MainWindow {
   private JComboBox searchComboBox;
   private JButton btnSearch;
   private JPanel logPanel;
-  private JButton btnDeleteColumn;
-  private JButton btnDeleteRow;
-  private JButton btnAddRow;
+  private JButton btnDeleteProperty;
+  private JButton btnDeleteEntity;
+  private JButton btnAddEntity;
 
   /**
    * Launch the application.
@@ -91,7 +90,7 @@ public class MainWindow {
   /**
    * Create table with scroll pane.
    */
-  protected void createTable() {
+  private void createTable() {
     table = new JTable();
     JScrollPane tScrollPane = new JScrollPane(table);
     frame.getContentPane().add(tScrollPane, BorderLayout.CENTER);
@@ -138,24 +137,26 @@ public class MainWindow {
     controlPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
     // Add button
-    btnAddColumn = new JButton("Add Column");
-    btnAddColumn.setEnabled(false);
-    btnAddColumn.addActionListener(new ActionListener() {
+    btnAddProperty = new JButton("Add Property");
+    btnAddProperty.setEnabled(true);
+    btnAddProperty.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (table.getModel().getColumnCount() != 0) {
-          String columnName = JOptionPane.showInputDialog("Please enter the column name: ");
-          TableColumn tableColumn = new TableColumn();
-          tableColumn.setHeaderValue(columnName);
-          table.getColumnModel().addColumn(tableColumn);
+        if (!(table.getModel() instanceof TableModel)) {
+          table.setModel(new TableModel());
         }
+        String columnName = JOptionPane.showInputDialog("Please enter the column name: ");
+        if (columnName != null && !columnName.isEmpty()) {
+          ((TableModel) table.getModel()).addColumn(columnName);
+        }
+        enableDisableControls();
       }
     });
-    controlPanel.add(btnAddColumn);
+    controlPanel.add(btnAddProperty);
 
     // Delete Column button
-    btnDeleteColumn = new JButton("Delete Column");
-    btnDeleteColumn.addActionListener(new ActionListener() {
+    btnDeleteProperty = new JButton("Delete Property");
+    btnDeleteProperty.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (table.getSelectedColumn() != -1) {
@@ -165,7 +166,7 @@ public class MainWindow {
             deletableColumnNames[i] = table.getColumnName(selectedColumns[i]);
           }
           ((TableModel) table.getModel()).deleteColumns(deletableColumnNames);
-          enableDisableColumnControls();
+          enableDisableControls();
         } else {
           JOptionPane.showMessageDialog(frame, "Please select a column.", "Deletion warning",
               JOptionPane.WARNING_MESSAGE);
@@ -174,39 +175,45 @@ public class MainWindow {
     });
 
     // Add Row button
-    btnAddRow = new JButton("Add Row");
-    btnAddRow.addActionListener(new ActionListener() {
+    btnAddEntity = new JButton("Add Entity");
+    btnAddEntity.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        // TODO implement the logic
+        if (table.getColumnCount() > 0) {
+          ((TableModel) table.getModel()).addRow(new Object[table.getColumnCount()]);
+          enableDisableControls();
+        } else {
+          JOptionPane.showMessageDialog(frame, "Please add column first.", "Row creation warning",
+              JOptionPane.WARNING_MESSAGE);
+        }
       }
     });
-    btnAddRow.setEnabled(false);
-    controlPanel.add(btnAddRow);
-    btnDeleteColumn.setEnabled(false);
-    controlPanel.add(btnDeleteColumn);
+    btnAddEntity.setEnabled(false);
+    controlPanel.add(btnAddEntity);
+    btnDeleteProperty.setEnabled(false);
+    controlPanel.add(btnDeleteProperty);
 
     // Delete Row button
-    btnDeleteRow = new JButton("Delete Row");
-    btnDeleteRow.addActionListener(new ActionListener() {
+    btnDeleteEntity = new JButton("Delete Entity");
+    btnDeleteEntity.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        System.out.println();
         if (table.getSelectedRow() != -1) {
           int[] selectedRows = table.getSelectedRows();
           ((TableModel) table.getModel()).deleteRows(selectedRows);
-          enableDisableRowControls();
+          enableDisableControls();
         } else {
           JOptionPane.showMessageDialog(frame, "Please select a row.", "Deletion warning",
               JOptionPane.WARNING_MESSAGE);
         }
       }
     });
-    btnDeleteRow.setEnabled(false);
-    controlPanel.add(btnDeleteRow);
+    btnDeleteEntity.setEnabled(false);
+    controlPanel.add(btnDeleteEntity);
 
     // Row Selection checkbox
     chckbxRowSelection = new JCheckBox("Row Selection");
-    chckbxRowSelection.setSelected(true);
     chckbxRowSelection.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -215,6 +222,7 @@ public class MainWindow {
     });
 
     chckbxRowSelection.setEnabled(false);
+    chckbxRowSelection.setSelected(true);
     controlPanel.add(chckbxRowSelection);
 
     // Column Selection checkbox
@@ -232,7 +240,7 @@ public class MainWindow {
   /**
    * Create the button panel and its buttons.
    */
-  protected void createButtonPanel() {
+  private void createButtonPanel() {
     JPanel buttonPanel = new JPanel();
     frame.getContentPane().add(buttonPanel, BorderLayout.WEST);
     buttonPanel.setLayout(new GridLayout(0, 1, 0, 0));
@@ -265,7 +273,7 @@ public class MainWindow {
           model = new TableModel(file, FileUtils.getExtension(file));
           table.setModel(model);
 
-          enableDisableColumnControls();
+          enableDisableControls();
         } else {
           log.append("Open command cancelled by user." + "\n");
         }
@@ -279,7 +287,7 @@ public class MainWindow {
   /**
    * Create bottom panel with log.
    */
-  protected void createLogPanel() {
+  private void createLogPanel() {
     JPanel logPanel_1 = new JPanel();
     frame.getContentPane().add(logPanel_1, BorderLayout.SOUTH);
     logPanel_1.setLayout(new GridLayout(0, 1, 0, 0));
@@ -292,29 +300,17 @@ public class MainWindow {
   }
 
   /**
-   * Enable or disable the control widgets according to the column content of the table.
+   * Enable or disable the control widgets according to the content of column and row of the table.
    */
-  private void enableDisableColumnControls() {
+  private void enableDisableControls() {
     // Enable/Disable widgets of the control panel
-    boolean tableIsEmpty = table.getColumnCount() == 0;
-    btnAddColumn.setEnabled(!tableIsEmpty);
-    btnDeleteColumn.setEnabled(!tableIsEmpty);
-    btnDeleteRow.setEnabled(!tableIsEmpty);
-    chckbxRowSelection.setEnabled(!tableIsEmpty);
-    chckbxColumnSelection.setEnabled(!tableIsEmpty);
-  }
-
-  /**
-   * Enable or disable the control widgets according to the row content of the table.
-   */
-  private void enableDisableRowControls() {
-    // Enable/Disable widgets of the control panel
-    boolean tableIsEmpty = table.getColumnCount() > 0 && table.getRowCount() <= 1;
-    btnAddColumn.setEnabled(!tableIsEmpty);
-    btnDeleteColumn.setEnabled(!tableIsEmpty);
-    btnDeleteRow.setEnabled(!tableIsEmpty);
-    chckbxRowSelection.setEnabled(!tableIsEmpty);
-    chckbxColumnSelection.setEnabled(!tableIsEmpty);
+    boolean hasColumn = table.getColumnCount() > 0;
+    boolean hasRow = table.getRowCount() > 0;
+    btnAddEntity.setEnabled(hasColumn);
+    btnDeleteProperty.setEnabled(hasRow);
+    btnDeleteEntity.setEnabled(hasRow);
+    chckbxRowSelection.setEnabled(hasRow);
+    chckbxColumnSelection.setEnabled(hasRow);
   }
 
 }
