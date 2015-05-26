@@ -3,6 +3,7 @@ package zoo.imaginary.control;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -55,5 +56,14 @@ public class TableModel extends DefaultTableModel {
     }
     getDataVector().removeAll(deletetableRows);
     fireTableStructureChanged();
+  }
+
+  @Override
+  public Class<?> getColumnClass(int columnIndex) {
+    return String.class;
+  }
+
+  public Vector getColumnNames() {
+    return columnIdentifiers;
   }
 }

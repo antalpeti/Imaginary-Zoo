@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -19,6 +21,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.TableRowSorter;
 
 import zoo.imaginary.util.ContentFilter;
 import zoo.imaginary.util.FileUtils;
@@ -37,11 +43,11 @@ public class MainWindow {
   private JPanel searchPanel;
   private JTextField txtSearch;
   private JComboBox searchComboBox;
-  private JButton btnSearch;
   private JPanel logPanel;
   private JButton btnDeleteProperty;
   private JButton btnDeleteEntity;
   private JButton btnAddEntity;
+  private TableRowSorter<TableModel> sorter;
 
   /**
    * Launch the application.
@@ -111,8 +117,11 @@ public class MainWindow {
    */
   private void createSearchPanel() {
     searchPanel = new JPanel();
+    // TableModel model = (TableModel) table.getModel();
+    // TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+
     frame.getContentPane().add(searchPanel, BorderLayout.NORTH);
-    searchPanel.setLayout(new GridLayout(0, 3, 0, 0));
+    searchPanel.setLayout(new GridLayout(0, 2, 0, 0));
 
     // Search text
     txtSearch = new JTextField();
@@ -122,10 +131,43 @@ public class MainWindow {
     // Search checkbox
     searchComboBox = new JComboBox();
     searchPanel.add(searchComboBox);
+  }
 
-    // Search button
-    btnSearch = new JButton("Search");
-    searchPanel.add(btnSearch);
+  private void fillSearchCombo() {
+    final TableModel tModel = (TableModel) table.getModel();
+    ComboBoxModel<String> cbModel = new DefaultComboBoxModel<>(tModel.getColumnNames());
+    searchComboBox.setModel(cbModel);
+    searchComboBox.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        sorter = new TableRowSorter<TableModel>(tModel);
+        table.setRowSorter(sorter);
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+
+          @Override
+          public void removeUpdate(DocumentEvent e) {
+            newFilter();
+          }
+
+          @Override
+          public void insertUpdate(DocumentEvent e) {
+            newFilter();
+          }
+
+          @Override
+          public void changedUpdate(DocumentEvent e) {
+            newFilter();
+          }
+        });
+      }
+
+      private void newFilter() {
+        RowFilter<TableModel, Integer> rf =
+            RowFilter.regexFilter(txtSearch.getText(), searchComboBox.getSelectedIndex());
+        sorter.setRowFilter(rf);
+      }
+    });
   }
 
   /**
@@ -145,11 +187,11 @@ public class MainWindow {
         if (!(table.getModel() instanceof TableModel)) {
           table.setModel(new TableModel());
         }
-        String columnName = JOptionPane.showInputDialog("Please enter the column name: ");
+        String columnName = JOptionPane.showInputDialog("Please enter the property name: ");
         if (columnName != null && !columnName.isEmpty()) {
           ((TableModel) table.getModel()).addColumn(columnName);
         }
-        enableDisableControls();
+        updateWidgets();
       }
     });
     controlPanel.add(btnAddProperty);
@@ -166,9 +208,9 @@ public class MainWindow {
             deletableColumnNames[i] = table.getColumnName(selectedColumns[i]);
           }
           ((TableModel) table.getModel()).deleteColumns(deletableColumnNames);
-          enableDisableControls();
+          updateWidgets();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please select a column.", "Deletion warning",
+          JOptionPane.showMessageDialog(frame, "Please select a property.", "Deletion warning",
               JOptionPane.WARNING_MESSAGE);
         }
       }
@@ -183,8 +225,8 @@ public class MainWindow {
           ((TableModel) table.getModel()).addRow(new Object[table.getColumnCount()]);
           enableDisableControls();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please add column first.", "Row creation warning",
-              JOptionPane.WARNING_MESSAGE);
+          JOptionPane.showMessageDialog(frame, "Please add property first.",
+              "Entity creation warning", JOptionPane.WARNING_MESSAGE);
         }
       }
     });
@@ -202,9 +244,9 @@ public class MainWindow {
         if (table.getSelectedRow() != -1) {
           int[] selectedRows = table.getSelectedRows();
           ((TableModel) table.getModel()).deleteRows(selectedRows);
-          enableDisableControls();
+          updateWidgets();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please select a row.", "Deletion warning",
+          JOptionPane.showMessageDialog(frame, "Please select an entity.", "Deletion warning",
               JOptionPane.WARNING_MESSAGE);
         }
       }
@@ -235,6 +277,14 @@ public class MainWindow {
     });
     chckbxColumnSelection.setEnabled(false);
     controlPanel.add(chckbxColumnSelection);
+  }
+
+  /**
+   * Update the state of the widgets.
+   */
+  private void updateWidgets() {
+    enableDisableControls();
+    fillSearchCombo();
   }
 
   /**
@@ -273,7 +323,7 @@ public class MainWindow {
           model = new TableModel(file, FileUtils.getExtension(file));
           table.setModel(model);
 
-          enableDisableControls();
+          updateWidgets();
         } else {
           log.append("Open command cancelled by user." + "\n");
         }
