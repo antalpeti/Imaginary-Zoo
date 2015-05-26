@@ -80,9 +80,11 @@ public class MainWindow {
 
     createTable();
 
-    createBottomPanel();
+    createLogPanel();
 
     createControlPanel();
+
+    createButtonPanel();
 
   }
 
@@ -228,16 +230,11 @@ public class MainWindow {
   }
 
   /**
-   * Create bottom panel with buttons and log.
+   * Create the button panel and its buttons.
    */
-  protected void createBottomPanel() {
-    JPanel bottomPanel = new JPanel();
-    frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-    bottomPanel.setLayout(new GridLayout(2, 1, 0, 0));
-
-
+  protected void createButtonPanel() {
     JPanel buttonPanel = new JPanel();
-    bottomPanel.add(buttonPanel);
+    frame.getContentPane().add(buttonPanel, BorderLayout.WEST);
     buttonPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
     // Open button
@@ -245,12 +242,6 @@ public class MainWindow {
     buttonPanel.add(btnOpen);
     btnOpen.setIcon(new ImageIcon(MainWindow.class
         .getResource("/zoo/imaginary/control/images/Open16.gif")));
-
-    // Log scroll pane
-    log = new JTextArea();
-    log.setEditable(false);
-    JScrollPane taScrollPane = new JScrollPane(log);
-    bottomPanel.add(taScrollPane);
 
     btnOpen.addActionListener(new ActionListener() {
       @Override
@@ -283,6 +274,21 @@ public class MainWindow {
       }
 
     });
+  }
+
+  /**
+   * Create bottom panel with log.
+   */
+  protected void createLogPanel() {
+    JPanel logPanel_1 = new JPanel();
+    frame.getContentPane().add(logPanel_1, BorderLayout.SOUTH);
+    logPanel_1.setLayout(new GridLayout(0, 1, 0, 0));
+
+    // Log scroll pane
+    log = new JTextArea();
+    log.setEditable(false);
+    JScrollPane taScrollPane = new JScrollPane(log);
+    logPanel_1.add(taScrollPane);
   }
 
   /**
