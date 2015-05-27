@@ -18,6 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -51,6 +52,8 @@ public class MainWindow {
   private JButton btnSave;
   private JCheckBox chckbxListAutoResize;
   private File currentDirectory;
+  private JSplitPane splitPane;
+  private JPanel mainPanel;
 
   /**
    * Launch the application.
@@ -61,6 +64,7 @@ public class MainWindow {
       public void run() {
         try {
           MainWindow window = new MainWindow();
+          window.frame.pack();
           window.frame.setVisible(true);
         } catch (Exception e) {
           e.printStackTrace();
@@ -84,16 +88,19 @@ public class MainWindow {
 
     createFrame();
 
+    createMainPanel();
+
     createSearchPanel();
 
     createTable();
-
-    createLogPanel();
 
     createControlPanel();
 
     createButtonPanel();
 
+    createLogPanel();
+
+    createSplitPanel();
   }
 
   /**
@@ -102,7 +109,7 @@ public class MainWindow {
   private void createTable() {
     table = new JTable();
     JScrollPane tScrollPane = new JScrollPane(table);
-    frame.getContentPane().add(tScrollPane, BorderLayout.CENTER);
+    mainPanel.add(tScrollPane, BorderLayout.CENTER);
   }
 
   /**
@@ -115,13 +122,30 @@ public class MainWindow {
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
+  private void createSplitPanel() {
+
+    splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainPanel, logPanel);
+    // splitPane.setContinuousLayout(true);
+    splitPane.setOneTouchExpandable(true);
+    splitPane.setResizeWeight(0.2);
+
+    frame.setContentPane(splitPane);
+  }
+
+  /**
+   * Create the main panel.
+   */
+  private void createMainPanel() {
+    mainPanel = new JPanel(new BorderLayout());
+  }
+
   /**
    * Create the search panel and its widgets.
    */
   private void createSearchPanel() {
     searchPanel = new JPanel();
 
-    frame.getContentPane().add(searchPanel, BorderLayout.NORTH);
+    mainPanel.add(searchPanel, BorderLayout.NORTH);
     searchPanel.setLayout(new GridLayout(0, 2, 0, 0));
 
     // Search text
@@ -177,7 +201,7 @@ public class MainWindow {
    */
   private void createControlPanel() {
     controlPanel = new JPanel();
-    frame.getContentPane().add(controlPanel, BorderLayout.EAST);
+    mainPanel.add(controlPanel, BorderLayout.EAST);
     controlPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
     // Add button
@@ -312,7 +336,7 @@ public class MainWindow {
    */
   private void createButtonPanel() {
     JPanel buttonPanel = new JPanel();
-    frame.getContentPane().add(buttonPanel, BorderLayout.WEST);
+    mainPanel.add(buttonPanel, BorderLayout.WEST);
     buttonPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
     // Open button
@@ -366,6 +390,7 @@ public class MainWindow {
               JOptionPane.showMessageDialog(frame, "Please give xml extension to the file",
                   "Save warning", JOptionPane.WARNING_MESSAGE);
           }
+          log.append("Saving: " + fc.getSelectedFile().getName() + "." + "\n");
         }
       }
 
@@ -397,7 +422,6 @@ public class MainWindow {
    */
   private void createLogPanel() {
     logPanel = new JPanel();
-    frame.getContentPane().add(logPanel, BorderLayout.SOUTH);
     logPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
     // Log scroll pane
