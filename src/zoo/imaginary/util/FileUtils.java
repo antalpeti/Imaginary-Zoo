@@ -126,7 +126,7 @@ public class FileUtils {
    * @return the extension of the examined file
    */
   public static String getExtension(File f) {
-    String ext = null;
+    String ext = "";
     String s = f.getName();
     int i = s.lastIndexOf('.');
 

@@ -371,8 +371,14 @@ public class MainWindow {
         int returnVal = fc.showSaveDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
           currentDirectory = fc.getCurrentDirectory();
-
-          FileUtils.createXmlFileByStAX(fc.getSelectedFile(), table);
+          switch (FileUtils.getExtension(fc.getSelectedFile())) {
+            case FileUtils.XML:
+              FileUtils.createXmlFileByStAX(fc.getSelectedFile(), table);
+              break;
+            default:
+              JOptionPane.showMessageDialog(frame, "Please give xml extension to the file",
+                  "Save warning", JOptionPane.WARNING_MESSAGE);
+          }
         }
       }
 
