@@ -28,18 +28,18 @@ public class UserHandler extends DefaultHandler {
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes)
       throws SAXException {
-    if (qName.equalsIgnoreCase("upgroup")) {
+    if (qName.equalsIgnoreCase("family")) {
       upgroup = attributes.getValue("name");
-    } else if (qName.equalsIgnoreCase("midgroup")) {
+    } else if (qName.equalsIgnoreCase("subfamily")) {
       midgroup = attributes.getValue("name");
-    } else if (qName.equalsIgnoreCase("subgroup")) {
+    } else if (qName.equalsIgnoreCase("genus")) {
       subgroup = attributes.getValue("name");
     } else if (qName.equalsIgnoreCase("entity")) {
       String entity = attributes.getValue("name");
       row = new Row();
-      row.getColumns().add(new Column("upgroup", upgroup));
-      row.getColumns().add(new Column("midgroup", midgroup));
-      row.getColumns().add(new Column("subgroup", subgroup));
+      row.getColumns().add(new Column("family", upgroup));
+      row.getColumns().add(new Column("subfamily", midgroup));
+      row.getColumns().add(new Column("genus", subgroup));
       row.getColumns().add(new Column("entity", entity));
     } else if (qName.equalsIgnoreCase("property")) {
       property = attributes.getValue("name");

@@ -1,41 +1,121 @@
 <?xml version="1.0"?>
 <zoo>
-	<upgroup name="vertebrate">
-		<midgroup name="mammal">
-			<subgroup name="cats">
-				<entity name="Maine Coon">
-					<property name="mass">7.7 kg</property>
-					<property name="length">1 m</property>
-					<property name="color">brown</property>
-					<property name="origin">United States of America</property>
+	<family name="Pteropodidae">
+		<subfamily name="Pteropodinae">
+			<genus name="Acerodon">
+				<entity name="Sulawesi fruit bat">
+					<property name="number">0001</property>
+					<property name="length">7.5 cm</property>
+					<property name="forearm length">7.5 cm</property>
+					<property name="color">reddish brown</property>
+					<property name="weight">30 grams</property>
+					<property name="inside">yes</property>
 				</entity>
-			</subgroup>
-			<subgroup name="cats">
-				<entity name="Maine Coon">
-					<property name="mass">7.7 kg</property>
-					<property name="length">1 m</property>
-					<property name="color">brown</property>
-					<property name="origin">United States of America</property>
+				<entity name="Talaud fruit bat">
+					<property name="number">0002</property>
+					<property name="head length">10.9 - 12.7 cm</property>
+					<property name="weight">50 - 90 grams</property>
+					<property name="color">black, dull gray</property>
+					<property name="wingspan">1 m</property>
+					<property name="inside">yes</property>
 				</entity>
-			</subgroup>
-			<subgroup name="dogs">
-				<entity name="German Speherd">
-					<property name="lifespan">11 years</property>
-					<property name="mass">30 - 40 kg</property>
-					<property name="origin">Germany</property>
-					<property name="heigh">60 - 65 cm</property>
-					<property name="color">brown</property>
+			</genus>
+		</subfamily>
+	</family>
+	<family name="Suidae">
+		<subfamily name="Babyrousinae">
+			<genus name="Babyrousa">
+				<entity name="North Sulawesi Babirusa">
+					<property name="number">0003</property>
+					<property name="length">85 – 110 cm</property>
+					<property name="weight">100 kg</property>
+					<property name="origin">Lembeh Islands</property>
+					<property name="inside">no</property>
 				</entity>
-			</subgroup>
-			<subgroup name="dogs">
-				<entity name="German Speherd">
-					<property name="lifespan">11 years</property>
-					<property name="mass">30 - 40 kg</property>
-					<property name="origin">Germany</property>
-					<property name="heigh">60 - 65 cm</property>
-					<property name="color">brown</property>
+			</genus>
+		</subfamily>
+		<subfamily name="Phacochoerinae">
+			<genus name="Phacochoerus">
+				<entity name="Desert Warthog">
+					<property name="number">0004</property>
+					<property name="length">125 cm</property>
+					<property name="weight">75 kg</property>
+					<property name="origin">Kenya, Somalia</property>
+					<property name="inside">no</property>
 				</entity>
-			</subgroup>
-		</midgroup>
-	</upgroup>
+			</genus>
+		</subfamily>
+	</family>
+	<family name="Camelidae">
+		<subfamily name="">
+			<genus name="Camelus">
+				<entity name="Bactrian Camel">
+					<property name="number">0005</property>
+					<property name="shoulder height">180 - 230 cm</property>
+					<property name="head-and-body length">225 – 350 cm</property>
+					<property name="tail length">35 – 55 cm</property>
+					<property name="height of humps">213 cm</property>
+					<property name="weight">300 - 1000 kg</property>
+					<property name="color">dark brown, sandy beige</property>
+					<property name="origin">Central Asia</property>
+					<property name="inside">no</property>
+				</entity>
+			</genus>
+		</subfamily>
+		<subfamily name="">
+			<genus name="Lama">
+				<entity name="Llama">
+					<property name="number">0006</property>
+					<property name="height">1.7 - 1.8 m</property>
+					<property name="weight">130 - 200 kg</property>
+					<property name="lifespan">15 - 25 years</property>
+					<property name="origin">Peru</property>
+					<property name="inside">no</property>
+				</entity>
+			</genus>
+		</subfamily>
+	</family>
+	<family name="Giraffidae">
+		<subfamily name="">
+			<genus name="Giraffa">
+				<entity name="Giraffe">
+					<property name="number">0007</property>
+					<property name="height">5 – 6 m</property>
+					<property name="weight">1192 kg</property>
+					<property name="sex">male</property>
+					<property name="tongue">50 cm</property>
+					<property name="foot diameter">30 cm</property>
+					<property name="top speed">60 km/h</property>
+					<property name="average speed">50 km/h</property>
+					<property name="origin">Africa</property>
+					<property name="inside">no</property>
+				</entity>
+			</genus>
+			<genus name="Giraffa">
+				<entity name="Giraffe">
+					<property name="number">0008</property>
+					<property name="height">5 – 6 m</property>
+					<property name="weight">828 kg</property>
+					<property name="sex">female</property>
+					<property name="tongue">50 cm</property>
+					<property name="foot diameter">10 cm</property>
+					<property name="top speed">60 km/h</property>
+					<property name="average speed">50 km/h</property>
+					<property name="origin">Africa</property>
+					<property name="inside">no</property>
+				</entity>
+			</genus>
+			<genus name="Okapia">
+				<entity name="Okapi">
+					<property name="number">0009</property>
+					<property name="origin">Congo</property>
+					<property name="tall">1.5 m</property>
+					<property name="weight ">200 - 350 kg</property>
+					<property name="color ">chocolate/reddish brown</property>
+					<property name="horns length ">15 cm</property>
+					<property name="inside">no</property>
+				</entity>
+			</genus>
+		</subfamily>
+	</family>
 </zoo>

@@ -28,13 +28,14 @@ import javax.swing.table.TableRowSorter;
 
 import zoo.imaginary.util.ContentFilter;
 import zoo.imaginary.util.FileUtils;
+import zoo.imaginary.util.TableColumnAdjuster;
 
 public class MainWindow {
 
   private JFrame frame;
   private JTable table;
   private JTextArea log;
-  JFileChooser fc;
+  private JFileChooser fc;
   private JButton btnOpen;
   private JButton btnAddProperty;
   private JPanel controlPanel;
@@ -42,12 +43,14 @@ public class MainWindow {
   private JCheckBox chckbxColumnSelection;
   private JPanel searchPanel;
   private JTextField txtSearch;
-  private JComboBox searchComboBox;
+  private JComboBox<String> searchComboBox;
   private JPanel logPanel;
   private JButton btnDeleteProperty;
-  private JButton btnDeleteEntity;
-  private JButton btnAddEntity;
+  private JButton btnDeleteAnimal;
+  private JButton btnAddAnimal;
   private TableRowSorter<TableModel> sorter;
+  private JButton btnSave;
+  private JCheckBox chckbxListAutoResize;
 
   /**
    * Launch the application.
@@ -98,6 +101,17 @@ public class MainWindow {
    */
   private void createTable() {
     table = new JTable();
+    // {
+    // @Override
+    // public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+    // Component component = super.prepareRenderer(renderer, row, column);
+    // int rendererWidth = component.getPreferredSize().width;
+    // TableColumn tableColumn = getColumnModel().getColumn(column);
+    // tableColumn.setPreferredWidth(Math.max(rendererWidth + getIntercellSpacing().width,
+    // tableColumn.getPreferredWidth()));
+    // return component;
+    // }
+    // };
     JScrollPane tScrollPane = new JScrollPane(table);
     frame.getContentPane().add(tScrollPane, BorderLayout.CENTER);
   }
@@ -126,48 +140,48 @@ public class MainWindow {
     // Search text
     txtSearch = new JTextField();
     txtSearch.setToolTipText("");
+    txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        newFilter();
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        newFilter();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        newFilter();
+      }
+    });
     searchPanel.add(txtSearch);
 
     // Search checkbox
-    searchComboBox = new JComboBox();
+    searchComboBox = new JComboBox<String>();
     searchPanel.add(searchComboBox);
   }
 
+  /**
+   * Fill up the combo box with the actual column names.
+   */
   private void fillSearchCombo() {
     final TableModel tModel = (TableModel) table.getModel();
     ComboBoxModel<String> cbModel = new DefaultComboBoxModel<>(tModel.getColumnNames());
     searchComboBox.setModel(cbModel);
-    searchComboBox.addActionListener(new ActionListener() {
+    sorter = new TableRowSorter<TableModel>(tModel);
+    table.setRowSorter(sorter);
+  }
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        sorter = new TableRowSorter<TableModel>(tModel);
-        table.setRowSorter(sorter);
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
-
-          @Override
-          public void removeUpdate(DocumentEvent e) {
-            newFilter();
-          }
-
-          @Override
-          public void insertUpdate(DocumentEvent e) {
-            newFilter();
-          }
-
-          @Override
-          public void changedUpdate(DocumentEvent e) {
-            newFilter();
-          }
-        });
-      }
-
-      private void newFilter() {
-        RowFilter<TableModel, Integer> rf =
-            RowFilter.regexFilter(txtSearch.getText(), searchComboBox.getSelectedIndex());
-        sorter.setRowFilter(rf);
-      }
-    });
+  /**
+   * Filter the table content according to the selected combobox element.
+   */
+  private void newFilter() {
+    RowFilter<TableModel, Integer> rf =
+        RowFilter.regexFilter(".*" + txtSearch.getText() + ".*", searchComboBox.getSelectedIndex());
+    sorter.setRowFilter(rf);
   }
 
   /**
@@ -217,42 +231,42 @@ public class MainWindow {
     });
 
     // Add Row button
-    btnAddEntity = new JButton("Add Entity");
-    btnAddEntity.addActionListener(new ActionListener() {
+    btnAddAnimal = new JButton("Add Animal");
+    btnAddAnimal.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (table.getColumnCount() > 0) {
           ((TableModel) table.getModel()).addRow(new Object[table.getColumnCount()]);
           enableDisableControls();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please add property first.",
+          JOptionPane.showMessageDialog(frame, "Please add a property first.",
               "Entity creation warning", JOptionPane.WARNING_MESSAGE);
         }
       }
     });
-    btnAddEntity.setEnabled(false);
-    controlPanel.add(btnAddEntity);
+    btnAddAnimal.setEnabled(false);
+    controlPanel.add(btnAddAnimal);
     btnDeleteProperty.setEnabled(false);
     controlPanel.add(btnDeleteProperty);
 
     // Delete Row button
-    btnDeleteEntity = new JButton("Delete Entity");
-    btnDeleteEntity.addActionListener(new ActionListener() {
+    btnDeleteAnimal = new JButton("Delete Animal");
+    btnDeleteAnimal.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         System.out.println();
         if (table.getSelectedRow() != -1) {
           int[] selectedRows = table.getSelectedRows();
           ((TableModel) table.getModel()).deleteRows(selectedRows);
-          updateWidgets();
+          enableDisableControls();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please select an entity.", "Deletion warning",
+          JOptionPane.showMessageDialog(frame, "Please select an animal.", "Deletion warning",
               JOptionPane.WARNING_MESSAGE);
         }
       }
     });
-    btnDeleteEntity.setEnabled(false);
-    controlPanel.add(btnDeleteEntity);
+    btnDeleteAnimal.setEnabled(false);
+    controlPanel.add(btnDeleteAnimal);
 
     // Row Selection checkbox
     chckbxRowSelection = new JCheckBox("Row Selection");
@@ -277,6 +291,24 @@ public class MainWindow {
     });
     chckbxColumnSelection.setEnabled(false);
     controlPanel.add(chckbxColumnSelection);
+
+    // List Autoresize checkbox
+    chckbxListAutoResize = new JCheckBox("List Auto Resize");
+    chckbxListAutoResize.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (chckbxListAutoResize.isSelected()) {
+          table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        } else {
+          table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+          TableColumnAdjuster tca = new TableColumnAdjuster(table);
+          tca.adjustColumns();
+        }
+      }
+    });
+    chckbxListAutoResize.setEnabled(false);
+    chckbxListAutoResize.setSelected(true);
+    controlPanel.add(chckbxListAutoResize);
   }
 
   /**
@@ -297,9 +329,10 @@ public class MainWindow {
 
     // Open button
     btnOpen = new JButton("Open");
-    buttonPanel.add(btnOpen);
     btnOpen.setIcon(new ImageIcon(MainWindow.class
         .getResource("/zoo/imaginary/control/images/Open16.gif")));
+    buttonPanel.add(btnOpen);
+
 
     btnOpen.addActionListener(new ActionListener() {
       @Override
@@ -328,25 +361,29 @@ public class MainWindow {
           log.append("Open command cancelled by user." + "\n");
         }
         log.setCaretPosition(log.getDocument().getLength());
-
       }
-
     });
+
+    btnSave = new JButton("Save");
+    btnSave.setIcon(new ImageIcon(MainWindow.class
+        .getResource("/zoo/imaginary/control/images/Save16.gif")));
+    btnSave.setEnabled(false);
+    buttonPanel.add(btnSave);
   }
 
   /**
    * Create bottom panel with log.
    */
   private void createLogPanel() {
-    JPanel logPanel_1 = new JPanel();
-    frame.getContentPane().add(logPanel_1, BorderLayout.SOUTH);
-    logPanel_1.setLayout(new GridLayout(0, 1, 0, 0));
+    logPanel = new JPanel();
+    frame.getContentPane().add(logPanel, BorderLayout.SOUTH);
+    logPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
     // Log scroll pane
     log = new JTextArea();
     log.setEditable(false);
     JScrollPane taScrollPane = new JScrollPane(log);
-    logPanel_1.add(taScrollPane);
+    logPanel.add(taScrollPane);
   }
 
   /**
@@ -356,11 +393,13 @@ public class MainWindow {
     // Enable/Disable widgets of the control panel
     boolean hasColumn = table.getColumnCount() > 0;
     boolean hasRow = table.getRowCount() > 0;
-    btnAddEntity.setEnabled(hasColumn);
+    btnAddAnimal.setEnabled(hasColumn);
     btnDeleteProperty.setEnabled(hasRow);
-    btnDeleteEntity.setEnabled(hasRow);
+    btnDeleteAnimal.setEnabled(hasRow);
     chckbxRowSelection.setEnabled(hasRow);
     chckbxColumnSelection.setEnabled(hasRow);
+    chckbxListAutoResize.setEnabled(hasRow);
+    btnSave.setEnabled(hasColumn);
   }
 
 }
