@@ -1,9 +1,11 @@
 package zoo.imaginary.util;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -89,6 +91,8 @@ public class FileUtils {
               || c != indexOfEntity) {
             if (model.getValueAt(r, c) != null) {
               xMLStreamWriter.writeStartElement(XmlTagsAttritubes.PROPERTY_STR.getValue());
+              xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(),
+                  model.getColumnName(c));
               xMLStreamWriter.writeCharacters((String) model.getValueAt(r, c));
               xMLStreamWriter.writeEndElement();
             }
@@ -107,10 +111,10 @@ public class FileUtils {
       String xmlString = stringWriter.getBuffer().toString();
       stringWriter.close();
 
-      FileWriter fileWriter = new FileWriter(file);
-      fileWriter.write(xmlString);
-
-      fileWriter.close();
+      OutputStreamWriter outputStreamWriter =
+          new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
+      outputStreamWriter.write(xmlString);
+      outputStreamWriter.close();
 
     } catch (XMLStreamException e) {
       e.printStackTrace();

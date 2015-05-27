@@ -101,17 +101,6 @@ public class MainWindow {
    */
   private void createTable() {
     table = new JTable();
-    // {
-    // @Override
-    // public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-    // Component component = super.prepareRenderer(renderer, row, column);
-    // int rendererWidth = component.getPreferredSize().width;
-    // TableColumn tableColumn = getColumnModel().getColumn(column);
-    // tableColumn.setPreferredWidth(Math.max(rendererWidth + getIntercellSpacing().width,
-    // tableColumn.getPreferredWidth()));
-    // return component;
-    // }
-    // };
     JScrollPane tScrollPane = new JScrollPane(table);
     frame.getContentPane().add(tScrollPane, BorderLayout.CENTER);
   }
@@ -131,8 +120,6 @@ public class MainWindow {
    */
   private void createSearchPanel() {
     searchPanel = new JPanel();
-    // TableModel model = (TableModel) table.getModel();
-    // TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 
     frame.getContentPane().add(searchPanel, BorderLayout.NORTH);
     searchPanel.setLayout(new GridLayout(0, 2, 0, 0));
