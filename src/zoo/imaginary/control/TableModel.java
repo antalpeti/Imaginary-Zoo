@@ -12,6 +12,8 @@ import zoo.imaginary.util.Row;
 
 public class TableModel extends DefaultTableModel {
 
+  private static final long serialVersionUID = 1552922271895981362L;
+
   public TableModel() {
     super();
   }
@@ -39,6 +41,7 @@ public class TableModel extends DefaultTableModel {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void deleteColumns(String[] deletableColumnNames) {
     List<String> colNamesList = new ArrayList<>();
     for (String colName : deletableColumnNames) {
@@ -48,6 +51,7 @@ public class TableModel extends DefaultTableModel {
     fireTableStructureChanged();
   }
 
+  @SuppressWarnings("unchecked")
   public void deleteRows(int[] deletableRowIndexes) {
     // Put rows into a List to make it easier to delete
     List<Object> deletetableRows = new ArrayList<>();
@@ -63,7 +67,7 @@ public class TableModel extends DefaultTableModel {
     return String.class;
   }
 
-  public Vector getColumnNames() {
+  public Vector<?> getColumnNames() {
     return columnIdentifiers;
   }
 }

@@ -14,9 +14,10 @@ import org.xml.sax.helpers.DefaultHandler;
 public class UserHandler extends DefaultHandler {
 
   private boolean prop = false;
-  private String upgroup;
-  private String midgroup;
-  private String subgroup;
+  private String family;
+  private String subfamily;
+  private String genus;
+  private String entity;
   private String property;
   private Row row;
   private List<Row> rows;
@@ -28,28 +29,28 @@ public class UserHandler extends DefaultHandler {
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes)
       throws SAXException {
-    if (qName.equalsIgnoreCase("family")) {
-      upgroup = attributes.getValue("name");
-    } else if (qName.equalsIgnoreCase("subfamily")) {
-      midgroup = attributes.getValue("name");
-    } else if (qName.equalsIgnoreCase("genus")) {
-      subgroup = attributes.getValue("name");
-    } else if (qName.equalsIgnoreCase("entity")) {
-      String entity = attributes.getValue("name");
+    if (qName.equalsIgnoreCase(XmlTagsAttritubes.FAMILY_STR.getValue())) {
+      family = attributes.getValue(XmlTagsAttritubes.NAME_STR.getValue());
+    } else if (qName.equalsIgnoreCase(XmlTagsAttritubes.SUBFAMILY_STR.getValue())) {
+      subfamily = attributes.getValue(XmlTagsAttritubes.NAME_STR.getValue());
+    } else if (qName.equalsIgnoreCase(XmlTagsAttritubes.GENUS_STR.getValue())) {
+      genus = attributes.getValue(XmlTagsAttritubes.NAME_STR.getValue());
+    } else if (qName.equalsIgnoreCase(XmlTagsAttritubes.ENTITY_STR.getValue())) {
+      entity = attributes.getValue(XmlTagsAttritubes.NAME_STR.getValue());
       row = new Row();
-      row.getColumns().add(new Column("family", upgroup));
-      row.getColumns().add(new Column("subfamily", midgroup));
-      row.getColumns().add(new Column("genus", subgroup));
-      row.getColumns().add(new Column("entity", entity));
-    } else if (qName.equalsIgnoreCase("property")) {
-      property = attributes.getValue("name");
+      row.getColumns().add(new Column(XmlTagsAttritubes.FAMILY_STR.getValue(), family));
+      row.getColumns().add(new Column(XmlTagsAttritubes.SUBFAMILY_STR.getValue(), subfamily));
+      row.getColumns().add(new Column(XmlTagsAttritubes.GENUS_STR.getValue(), genus));
+      row.getColumns().add(new Column(XmlTagsAttritubes.ENTITY_STR.getValue(), entity));
+    } else if (qName.equalsIgnoreCase(XmlTagsAttritubes.PROPERTY_STR.getValue())) {
+      property = attributes.getValue(XmlTagsAttritubes.NAME_STR.getValue());
       prop = true;
     }
   }
 
   @Override
   public void endElement(String uri, String localName, String qName) throws SAXException {
-    if (qName.equalsIgnoreCase("entity")) {
+    if (qName.equalsIgnoreCase(XmlTagsAttritubes.ENTITY_STR.getValue())) {
       getRows().add(row);
     }
   }

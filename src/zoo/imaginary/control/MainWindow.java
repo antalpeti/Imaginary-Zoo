@@ -35,7 +35,6 @@ public class MainWindow {
   private JFrame frame;
   private JTable table;
   private JTextArea log;
-  private JFileChooser fc;
   private JButton btnOpen;
   private JButton btnAddProperty;
   private JPanel controlPanel;
@@ -51,6 +50,7 @@ public class MainWindow {
   private TableRowSorter<TableModel> sorter;
   private JButton btnSave;
   private JCheckBox chckbxListAutoResize;
+  private File currentDirectory;
 
   /**
    * Launch the application.
@@ -167,9 +167,10 @@ public class MainWindow {
   /**
    * Fill up the combo box with the actual column names.
    */
+  @SuppressWarnings({"rawtypes", "unchecked"})
   private void fillSearchCombo() {
     final TableModel tModel = (TableModel) table.getModel();
-    ComboBoxModel<String> cbModel = new DefaultComboBoxModel<>(tModel.getColumnNames());
+    ComboBoxModel cbModel = new DefaultComboBoxModel<>(tModel.getColumnNames());
     searchComboBox.setModel(cbModel);
     sorter = new TableRowSorter<TableModel>(tModel);
     table.setRowSorter(sorter);
@@ -338,19 +339,14 @@ public class MainWindow {
       @Override
       public void actionPerformed(ActionEvent e) {
         TableModel model = null;
-        if (fc == null) {
-          fc = new JFileChooser();
-          fc.addChoosableFileFilter(new ContentFilter());
-          fc.setAcceptAllFileFilterUsed(true);
-          File currentDirectory = new File(".");
-          fc.setCurrentDirectory(currentDirectory);
-          fc.setDialogTitle("Open Database");
-        }
+        JFileChooser fc = createFileChooser();
+        fc.setDialogTitle("Open Database");
 
         int returnVal = fc.showOpenDialog(frame);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
           File file = fc.getSelectedFile();
+          currentDirectory = fc.getCurrentDirectory();
           // This is where a real application would open the file.
           log.append("Opening: " + file.getName() + "." + "\n");
           model = new TableModel(file, FileUtils.getExtension(file));
@@ -365,10 +361,42 @@ public class MainWindow {
     });
 
     btnSave = new JButton("Save");
+    btnSave.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JFileChooser fc = createFileChooser();
+        fc.setDialogTitle("Save Database");
+
+        int returnVal = fc.showSaveDialog(frame);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          currentDirectory = fc.getCurrentDirectory();
+
+          FileUtils.createXmlFileByStAX(fc.getSelectedFile(), table);
+        }
+      }
+
+    });
     btnSave.setIcon(new ImageIcon(MainWindow.class
         .getResource("/zoo/imaginary/control/images/Save16.gif")));
     btnSave.setEnabled(false);
     buttonPanel.add(btnSave);
+  }
+
+  /**
+   * Create a custom FileChooser with only xml and csv filter option.
+   *
+   * @return the created FileChooser
+   */
+  private JFileChooser createFileChooser() {
+    JFileChooser fc = new JFileChooser();
+    fc.addChoosableFileFilter(new ContentFilter());
+    fc.setAcceptAllFileFilterUsed(true);
+    if (currentDirectory == null) {
+      currentDirectory = new File(".");
+    }
+    fc.setCurrentDirectory(currentDirectory);
+    return fc;
   }
 
   /**
