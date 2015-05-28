@@ -19,9 +19,15 @@ public class TableModel extends DefaultTableModel {
     super();
   }
 
-  public TableModel(File file, String extension, JFrame frame) {
+  /**
+   * Create a new TableModel and fill it with proper xml of csv file content.
+   *
+   * @param file xml or csv file
+   * @param frame the actual frame to show the error dialogs
+   */
+  public TableModel(File file, JFrame frame) {
     List<Row> rows = null;
-    switch (extension) {
+    switch (FileUtils.getExtension(file)) {
       case FileUtils.XML:
         // Retrieve data from XML file.
         rows = FileUtils.parseXmlFileBySax(file, frame);
@@ -53,6 +59,11 @@ public class TableModel extends DefaultTableModel {
     }
   }
 
+  /**
+   * Delete multiple rows from the table.
+   *
+   * @param deletableRowIndexes indexes of the deletable rows
+   */
   @SuppressWarnings("unchecked")
   public void deleteRows(int[] deletableRowIndexes) {
     // Put rows into a List to make it easier to delete
@@ -69,6 +80,11 @@ public class TableModel extends DefaultTableModel {
     return String.class;
   }
 
+  /**
+   * Retrieve the column identifiers.
+   *
+   * @return the actual column identifiers
+   */
   public Vector<?> getColumnIdentifiers() {
     return columnIdentifiers;
   }

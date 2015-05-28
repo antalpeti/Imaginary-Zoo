@@ -1,7 +1,7 @@
 package zoo.imaginary.util;
 
 /**
- * Represent a tag from the xml, or a column from the cvs file.
+ * Represents a tag from the xml, or a column from the cvs file.
  */
 public class Column {
   /**
@@ -13,26 +13,54 @@ public class Column {
    */
   private String data;
 
-  public String getName() {
-    return name;
-  }
 
-  public void setNames(String header) {
-    this.name = header;
-  }
-
-  public String getData() {
-    return data;
-  }
-
-  public void setData(String data) {
-    this.data = data;
-  }
-
+  /**
+   * Create a new column and initialize its field.
+   *
+   * @param name the name of the column
+   * @param data the data of the column
+   */
   public Column(String name, String data) {
     this.name = name;
     this.data = data;
   }
+
+  /**
+   * Retrieve the name of the column.
+   *
+   * @return the actual name of the column
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Set the name of the column.
+   *
+   * @param name the new name of the column
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /**
+   * Retrieve the data of the column.
+   *
+   * @return data the new data of the column
+   */
+  public String getData() {
+    return data;
+  }
+
+  /**
+   * Set the data of the column.
+   *
+   * @return data the new data of the column
+   */
+  public void setData(String data) {
+    this.data = data;
+  }
+
 
   @Override
   public String toString() {

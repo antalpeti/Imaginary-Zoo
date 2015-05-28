@@ -18,8 +18,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-/*
- * Class to manage the widths of colunmns in a table.
+/**
+ * Class to manage the widths of columns in a table.
  *
  * Various properties control how the width of the column is calculated. Another property controls
  * whether column width calculation should be dynamic. Finally, various Actions will be added to the

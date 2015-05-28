@@ -27,7 +27,6 @@ public class ContentFilter extends FileFilter {
     return false;
   }
 
-  // The description of this filter
   @Override
   public String getDescription() {
     return "CSV, XML files";

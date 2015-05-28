@@ -368,7 +368,7 @@ public class MainWindow {
     chckbxColumnSelection.setEnabled(false);
     controlPanel.add(chckbxColumnSelection);
 
-    // List Autoresize checkbox
+    // List Auto Resize checkbox
     chckbxListAutoResize = new JCheckBox("List Auto Resize");
     chckbxListAutoResize.addActionListener(new ActionListener() {
       @Override
@@ -388,7 +388,7 @@ public class MainWindow {
   }
 
   /**
-   * Create new table model if there is no one. Typically when is blank the table.
+   * Create new table model if there is no one. Typically when the table is blank .
    */
   private void createNewTableModel() {
     if (!(table.getModel() instanceof TableModel)) {
@@ -445,7 +445,7 @@ public class MainWindow {
 
           // This is where a real application would open the file.
           log.append("Opening: " + file.getName() + "." + "\n");
-          model = new TableModel(file, FileUtils.getExtension(file), frame);
+          model = new TableModel(file, frame);
           table.setModel(model);
 
           updateWidgets();

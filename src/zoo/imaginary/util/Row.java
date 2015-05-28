@@ -4,9 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Represents the content of between the opening a closing family tag in case of xml file.
+ * Represents a line from the file in case of cvs file.
+ */
 public class Row {
   private List<Column> columns;
 
+  /**
+   * Create a row and initialize it field.
+   */
   public Row() {
     columns = new ArrayList<Column>();
   }

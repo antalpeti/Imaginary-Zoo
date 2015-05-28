@@ -22,6 +22,9 @@ public class UserHandler extends DefaultHandler {
   private Row row;
   private List<Row> rows;
 
+  /**
+   * Create new UserHandler and initialize the its row field.
+   */
   public UserHandler() {
     rows = new ArrayList<Row>();
   }

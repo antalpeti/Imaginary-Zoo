@@ -27,6 +27,9 @@ import javax.xml.stream.XMLStreamWriter;
 
 import zoo.imaginary.control.TableModel;
 
+/**
+ * Helper functions for xml, csv file processing.
+ */
 public class FileUtils {
 
   public final static String XML = "xml";
@@ -35,7 +38,8 @@ public class FileUtils {
   /**
    * Parse the content of the xml file and arrange into rows.
    *
-   * @param file the file path of the xml file
+   * @param file the xml file
+   * @param frame the actual frame to show the error dialogs
    * @return the content of the xml file arranged into rows
    */
   public static List<Row> parseXmlFileBySax(File file, JFrame frame) {
@@ -52,6 +56,12 @@ public class FileUtils {
     return userhandler.getRows();
   }
 
+  /**
+   * Create a new xml file based on the actually selected rows of the table.
+   *
+   * @param file this file will store the xml data
+   * @param table this provide the data
+   */
   public static void createXmlFileByStAX(File file, JTable table) {
     try {
       TableModel model = (TableModel) table.getModel();
@@ -145,6 +155,13 @@ public class FileUtils {
     }
   }
 
+  /**
+   * Parse the content of the csv file and arrange into rows.
+   *
+   * @param file the csv file
+   * @param frame the actual frame to show the error dialogs
+   * @return the content of the csv file arranged into rows
+   */
   public static List<Row> parseCsvFile(File file, JFrame frame) {
     List<Row> rows = new ArrayList<>();
     try {
@@ -186,6 +203,12 @@ public class FileUtils {
     return rows;
   }
 
+  /**
+   * Create a new csv file based on the actually selected rows of the table.
+   *
+   * @param file this file will store the csv data
+   * @param table this provide the data
+   */
   public static void createCsvFile(File file, JTable table) {
     TableModel model = (TableModel) table.getModel();
 
