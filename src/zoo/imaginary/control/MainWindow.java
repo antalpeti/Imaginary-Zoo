@@ -52,7 +52,6 @@ public class MainWindow {
   private JButton btnSave;
   private JCheckBox chckbxListAutoResize;
   private File currentDirectory;
-  private JSplitPane splitPane;
   private JPanel mainPanel;
 
   /**
@@ -118,16 +117,13 @@ public class MainWindow {
   private void createFrame() {
     frame = new JFrame();
     frame.setTitle("Imaginary Zoo Database");
-    frame.setBounds(100, 100, 698, 512);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
   private void createSplitPanel() {
-
-    splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainPanel, logPanel);
-    // splitPane.setContinuousLayout(true);
+    JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainPanel, logPanel);
+    splitPane.setResizeWeight(0.8);
     splitPane.setOneTouchExpandable(true);
-    splitPane.setResizeWeight(0.2);
 
     frame.setContentPane(splitPane);
   }
