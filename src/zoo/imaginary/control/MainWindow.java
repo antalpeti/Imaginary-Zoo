@@ -250,7 +250,7 @@ public class MainWindow {
     btnRemoveColumn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (table.getSelectedColumn() != -1) {
+        if (table.getSelectedColumns().length == 1) {
           int[] selectedColumns = table.getSelectedColumns();
           TableModel model = (TableModel) table.getModel();
           TableColumnModel columnModel = table.getColumnModel();
@@ -300,8 +300,8 @@ public class MainWindow {
           // }
           updateWidgets();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please select a column.", "Deletion warning",
-              JOptionPane.WARNING_MESSAGE);
+          JOptionPane.showMessageDialog(frame, "Please select only one column.",
+              "Deletion warning", JOptionPane.WARNING_MESSAGE);
         }
       }
     });
@@ -442,9 +442,10 @@ public class MainWindow {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
           File file = fc.getSelectedFile();
           currentDirectory = fc.getCurrentDirectory();
+
           // This is where a real application would open the file.
           log.append("Opening: " + file.getName() + "." + "\n");
-          model = new TableModel(file, FileUtils.getExtension(file));
+          model = new TableModel(file, FileUtils.getExtension(file), frame);
           table.setModel(model);
 
           updateWidgets();

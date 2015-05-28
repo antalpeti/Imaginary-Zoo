@@ -11,8 +11,22 @@ public class Row {
     columns = new ArrayList<Column>();
   }
 
+  /**
+   * Retrieve the column elements of the row.
+   *
+   * @return the actual column elements of the row
+   */
   public List<Column> getColumns() {
     return columns;
+  }
+
+  /**
+   * Add the end of the list a new column element.
+   *
+   * @param column the new column element
+   */
+  public void add(Column column) {
+    columns.add(column);
   }
 
   /**

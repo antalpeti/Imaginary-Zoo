@@ -110,9 +110,9 @@
 					<property name="number">0009</property>
 					<property name="origin">Congo</property>
 					<property name="tall">1.5 m</property>
-					<property name="weight ">200 - 350 kg</property>
-					<property name="color ">chocolate/reddish brown</property>
-					<property name="horns length ">15 cm</property>
+					<property name="weight">200 - 350 kg</property>
+					<property name="color">chocolate/reddish brown</property>
+					<property name="horns length">15 cm</property>
 					<property name="inside">no</property>
 				</entity>
 			</genus>

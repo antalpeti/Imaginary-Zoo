@@ -38,10 +38,10 @@ public class UserHandler extends DefaultHandler {
     } else if (qName.equalsIgnoreCase(XmlTagsAttritubes.ENTITY_STR.getValue())) {
       entity = attributes.getValue(XmlTagsAttritubes.NAME_STR.getValue());
       row = new Row();
-      row.getColumns().add(new Column(XmlTagsAttritubes.FAMILY_STR.getValue(), family));
-      row.getColumns().add(new Column(XmlTagsAttritubes.SUBFAMILY_STR.getValue(), subfamily));
-      row.getColumns().add(new Column(XmlTagsAttritubes.GENUS_STR.getValue(), genus));
-      row.getColumns().add(new Column(XmlTagsAttritubes.ENTITY_STR.getValue(), entity));
+      row.add(new Column(XmlTagsAttritubes.FAMILY_STR.getValue(), family));
+      row.add(new Column(XmlTagsAttritubes.SUBFAMILY_STR.getValue(), subfamily));
+      row.add(new Column(XmlTagsAttritubes.GENUS_STR.getValue(), genus));
+      row.add(new Column(XmlTagsAttritubes.ENTITY_STR.getValue(), entity));
     } else if (qName.equalsIgnoreCase(XmlTagsAttritubes.PROPERTY_STR.getValue())) {
       property = attributes.getValue(XmlTagsAttritubes.NAME_STR.getValue());
       prop = true;
@@ -59,7 +59,7 @@ public class UserHandler extends DefaultHandler {
   public void characters(char ch[], int start, int length) throws SAXException {
     if (prop) {
       String value = new String(ch, start, length);
-      row.getColumns().add(new Column(property, value));
+      row.add(new Column(property, value));
       prop = false;
     }
   }

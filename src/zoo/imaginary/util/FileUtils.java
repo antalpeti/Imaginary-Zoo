@@ -1,17 +1,22 @@
 package zoo.imaginary.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.xml.parsers.SAXParser;
@@ -33,7 +38,7 @@ public class FileUtils {
    * @param file the file path of the xml file
    * @return the content of the xml file arranged into rows
    */
-  public static List<Row> parseXmlFileBySax(File file) {
+  public static List<Row> parseXmlFileBySax(File file, JFrame frame) {
     UserHandler userhandler = null;
     try {
       SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -41,6 +46,7 @@ public class FileUtils {
       userhandler = new UserHandler();
       saxParser.parse(file, userhandler);
     } catch (Exception e) {
+      JOptionPane.showMessageDialog(frame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       e.printStackTrace();
     }
     return userhandler.getRows();
@@ -137,6 +143,47 @@ public class FileUtils {
           JOptionPane.ERROR_MESSAGE);
       e.printStackTrace();
     }
+  }
+
+  public static List<Row> parseCsvFile(File file, JFrame frame) {
+    List<Row> rows = new ArrayList<>();
+    try {
+      // Open the file
+      FileInputStream fileInputStream = new FileInputStream(file);
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+      String strLine;
+      String[] columnHeaders = null;
+      // Read File Line By Line
+      while ((strLine = bufferedReader.readLine()) != null) {
+        // Print the content on the console
+        if (strLine.length() > 1) {
+          Row row = new Row();
+          String subStrLine = strLine.substring(1, strLine.length() - 1);
+          String[] columnDatas = subStrLine.split("\"\\s*,\\s*\"");
+          if (columnHeaders == null) {
+            columnHeaders = columnDatas;
+          } else {
+            for (int i = 0; i < columnDatas.length; i++) {
+              row.add(new Column(columnHeaders[i], columnDatas[i]));
+            }
+            rows.add(row);
+          }
+          System.out.println(Arrays.toString(columnDatas));
+        }
+      }
+      // Close the file
+      bufferedReader.close();
+      fileInputStream.close();
+    } catch (FileNotFoundException e) {
+      JOptionPane.showMessageDialog(frame, e.getMessage(), "File error", JOptionPane.ERROR_MESSAGE);
+      e.printStackTrace();
+    } catch (IOException e) {
+      JOptionPane.showMessageDialog(frame, e.getMessage(), "Input/Output error",
+          JOptionPane.ERROR_MESSAGE);
+      e.printStackTrace();
+    }
+
+    return rows;
   }
 
   public static void createCsvFile(File file, JTable table) {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
 import zoo.imaginary.util.FileUtils;
@@ -18,10 +19,21 @@ public class TableModel extends DefaultTableModel {
     super();
   }
 
-  public TableModel(File file, String extension) {
-    // Retreive data from XML file.
-    if (extension.equals(FileUtils.XML)) {
-      List<Row> rows = FileUtils.parseXmlFileBySax(file);
+  public TableModel(File file, String extension, JFrame frame) {
+    List<Row> rows = null;
+    switch (extension) {
+      case FileUtils.XML:
+        // Retrieve data from XML file.
+        rows = FileUtils.parseXmlFileBySax(file, frame);
+        break;
+      case FileUtils.CSV:
+        // Retrieve data from CSV file.
+        rows = FileUtils.parseCsvFile(file, frame);
+        break;
+      default:
+        break;
+    }
+    if (rows != null) {
       for (String columnName : FileUtils.findAllColumnNames(rows)) {
         this.addColumn(columnName);
       }
