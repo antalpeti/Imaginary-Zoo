@@ -8,6 +8,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import zoo.imaginary.model.Column;
+import zoo.imaginary.model.Row;
+
 /**
  * Responsible to read the structured xml files.
  */

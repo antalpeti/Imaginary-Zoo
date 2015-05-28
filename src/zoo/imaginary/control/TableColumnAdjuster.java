@@ -1,4 +1,4 @@
-package zoo.imaginary.util;
+package zoo.imaginary.control;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

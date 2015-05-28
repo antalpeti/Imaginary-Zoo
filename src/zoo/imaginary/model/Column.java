@@ -1,4 +1,4 @@
-package zoo.imaginary.util;
+package zoo.imaginary.model;
 
 /**
  * Represents a tag from the xml, or a column from the cvs file.
@@ -9,7 +9,7 @@ public class Column {
    */
   private String name;
   /**
-   * Atribute name or content from the xml or column data from the csv.
+   * Attribute name or content from the xml or column data from the csv.
    */
   private String data;
 

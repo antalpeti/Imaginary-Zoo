@@ -11,7 +11,6 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +24,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import zoo.imaginary.control.TableModel;
+import zoo.imaginary.model.Column;
+import zoo.imaginary.model.Row;
+import zoo.imaginary.model.TableModel;
 
 /**
  * Helper functions for xml, csv file processing.
@@ -185,7 +186,6 @@ public class FileUtils {
             }
             rows.add(row);
           }
-          System.out.println(Arrays.toString(columnDatas));
         }
       }
       // Close the file

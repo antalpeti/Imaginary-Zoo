@@ -1,4 +1,4 @@
-package zoo.imaginary.control;
+package zoo.imaginary.model;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,7 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
 import zoo.imaginary.util.FileUtils;
-import zoo.imaginary.util.Row;
 
 public class TableModel extends DefaultTableModel {
 

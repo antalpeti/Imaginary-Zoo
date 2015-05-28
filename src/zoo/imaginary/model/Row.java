@@ -1,4 +1,4 @@
-package zoo.imaginary.util;
+package zoo.imaginary.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;

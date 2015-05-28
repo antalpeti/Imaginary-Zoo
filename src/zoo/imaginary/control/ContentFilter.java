@@ -1,8 +1,10 @@
-package zoo.imaginary.util;
+package zoo.imaginary.control;
 
 import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
+
+import zoo.imaginary.util.FileUtils;
 
 /**
  * This file responsible to see only xml or csv files in the FileChooser window.

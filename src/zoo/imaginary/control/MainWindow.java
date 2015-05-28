@@ -30,9 +30,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
-import zoo.imaginary.util.ContentFilter;
+import zoo.imaginary.model.TableModel;
 import zoo.imaginary.util.FileUtils;
-import zoo.imaginary.util.TableColumnAdjuster;
 import zoo.imaginary.util.XmlTagsAttritubes;
 
 public class MainWindow {
@@ -448,6 +447,7 @@ public class MainWindow {
           model = new TableModel(file, frame);
           table.setModel(model);
 
+          txtSearch.setText("");
           updateWidgets();
         } else {
           log.append("Open command cancelled by user." + "\n");
