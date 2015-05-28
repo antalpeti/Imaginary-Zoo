@@ -1,6 +1,7 @@
 package zoo.imaginary.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -56,11 +58,14 @@ public class FileUtils {
       xMLStreamWriter.writeStartDocument();
       xMLStreamWriter.writeStartElement("zoo");
 
-      int indexOfFamily = model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.FAMILY_STR.getValue());
+      int indexOfFamily =
+          model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.FAMILY_STR.getValue());
       int indexOfSubFamily =
           model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.SUBFAMILY_STR.getValue());
-      int indexOfGenus = model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.GENUS_STR.getValue());
-      int indexOfEntity = model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.ENTITY_STR.getValue());
+      int indexOfGenus =
+          model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.GENUS_STR.getValue());
+      int indexOfEntity =
+          model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.ENTITY_STR.getValue());
 
       int[] rowIndexes;
       if (table.getSelectedRows().length > 0) {
@@ -72,28 +77,36 @@ public class FileUtils {
         }
       }
 
-      for (int r : rowIndexes) {
+      for (int rowIdx : rowIndexes) {
         xMLStreamWriter.writeStartElement(XmlTagsAttritubes.FAMILY_STR.getValue());
-        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(), (String) (model
-            .getValueAt(r, indexOfFamily) == null ? "" : model.getValueAt(r, indexOfFamily)));
+        xMLStreamWriter.writeAttribute(
+            XmlTagsAttritubes.NAME_STR.getValue(),
+            (String) (model.getValueAt(rowIdx, indexOfFamily) == null ? "" : model.getValueAt(
+                rowIdx, indexOfFamily)));
         xMLStreamWriter.writeStartElement(XmlTagsAttritubes.SUBFAMILY_STR.getValue());
-        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(), (String) (model
-            .getValueAt(r, indexOfSubFamily) == null ? "" : model.getValueAt(r, indexOfSubFamily)));
+        xMLStreamWriter.writeAttribute(
+            XmlTagsAttritubes.NAME_STR.getValue(),
+            (String) (model.getValueAt(rowIdx, indexOfSubFamily) == null ? "" : model.getValueAt(
+                rowIdx, indexOfSubFamily)));
         xMLStreamWriter.writeStartElement(XmlTagsAttritubes.GENUS_STR.getValue());
-        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(), (String) (model
-            .getValueAt(r, indexOfGenus) == null ? "" : model.getValueAt(r, indexOfGenus)));
+        xMLStreamWriter.writeAttribute(
+            XmlTagsAttritubes.NAME_STR.getValue(),
+            (String) (model.getValueAt(rowIdx, indexOfGenus) == null ? "" : model.getValueAt(
+                rowIdx, indexOfGenus)));
         xMLStreamWriter.writeStartElement(XmlTagsAttritubes.ENTITY_STR.getValue());
-        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(), (String) (model
-            .getValueAt(r, indexOfEntity) == null ? "" : model.getValueAt(r, indexOfEntity)));
+        xMLStreamWriter.writeAttribute(
+            XmlTagsAttritubes.NAME_STR.getValue(),
+            (String) (model.getValueAt(rowIdx, indexOfEntity) == null ? "" : model.getValueAt(
+                rowIdx, indexOfEntity)));
 
-        for (int c = 0; c < model.getColumnCount(); c++) {
-          if (c != indexOfFamily || c != indexOfSubFamily || c != indexOfGenus
-              || c != indexOfEntity) {
-            if (model.getValueAt(r, c) != null) {
+        for (int colIdx = 0; colIdx < model.getColumnCount(); colIdx++) {
+          if (colIdx != indexOfFamily || colIdx != indexOfSubFamily || colIdx != indexOfGenus
+              || colIdx != indexOfEntity) {
+            if (model.getValueAt(rowIdx, colIdx) != null) {
               xMLStreamWriter.writeStartElement(XmlTagsAttritubes.PROPERTY_STR.getValue());
               xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(),
-                  model.getColumnName(c));
-              xMLStreamWriter.writeCharacters((String) model.getValueAt(r, c));
+                  model.getColumnName(colIdx));
+              xMLStreamWriter.writeCharacters((String) model.getValueAt(rowIdx, colIdx));
               xMLStreamWriter.writeEndElement();
             }
           }
@@ -117,9 +130,73 @@ public class FileUtils {
       outputStreamWriter.close();
 
     } catch (XMLStreamException e) {
+      JOptionPane.showMessageDialog(table, e.getMessage(), "XML error", JOptionPane.ERROR_MESSAGE);
       e.printStackTrace();
     } catch (IOException e) {
+      JOptionPane.showMessageDialog(table, e.getMessage(), "Input/Output error",
+          JOptionPane.ERROR_MESSAGE);
       e.printStackTrace();
+    }
+  }
+
+  public static void createCsvFile(File file, JTable table) {
+    TableModel model = (TableModel) table.getModel();
+
+    int[] rowIndexes;
+    if (table.getSelectedRows().length > 0) {
+      rowIndexes = table.getSelectedRows();
+    } else {
+      rowIndexes = new int[model.getRowCount()];
+      for (int i = 0; i < model.getRowCount(); i++) {
+        rowIndexes[i] = i;
+      }
+    }
+
+    StringBuilder stringBuilder = new StringBuilder();
+    String separator = ",";
+    String newLine = "\r\n";
+    String doubleQuote = "\"";
+
+    // headers of columns
+    for (int i = 0; i < model.getColumnCount(); i++) {
+      stringBuilder.append(doubleQuote);
+      stringBuilder.append(model.getColumnName(i));
+      stringBuilder.append(doubleQuote);
+      stringBuilder.append(separator);
+    }
+    // remove the last separator
+    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    stringBuilder.append(newLine);
+
+    // datas of columns
+    for (int rowIdx : rowIndexes) {
+      for (int colIdx = 0; colIdx < model.getColumnCount(); colIdx++) {
+        stringBuilder.append(doubleQuote);
+        stringBuilder.append(model.getValueAt(rowIdx, colIdx) == null ? "" : model.getValueAt(
+            rowIdx, colIdx));
+        stringBuilder.append(doubleQuote);
+        stringBuilder.append(separator);
+      }
+      // remove the last separator
+      stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+      stringBuilder.append(newLine);
+    }
+
+    String csvSting = stringBuilder.toString();
+
+    OutputStreamWriter outputStreamWriter = null;
+    try {
+      outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
+      outputStreamWriter.write(csvSting);
+      outputStreamWriter.close();
+    } catch (FileNotFoundException e) {
+      JOptionPane.showMessageDialog(table, e.getMessage(), "File error", JOptionPane.ERROR_MESSAGE);
+      e.printStackTrace();
+    } catch (IOException e) {
+      JOptionPane.showMessageDialog(table, e.getMessage(), "Input/Output error",
+          JOptionPane.ERROR_MESSAGE);
+      e.printStackTrace();
+    } finally {
     }
   }
 

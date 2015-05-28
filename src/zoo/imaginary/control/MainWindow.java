@@ -49,7 +49,7 @@ public class MainWindow {
   private JTextField txtSearch;
   private JComboBox<String> searchComboBox;
   private JPanel logPanel;
-  private JButton btnRemoveColumns;
+  private JButton btnRemoveColumn;
   private JButton btnRemoveRows;
   private JButton btnAddRows;
   private TableRowSorter<TableModel> sorter;
@@ -246,8 +246,8 @@ public class MainWindow {
     controlPanel.add(btnAddColumn);
 
     // Remove Column(s) button
-    btnRemoveColumns = new JButton("Remove Column(s)");
-    btnRemoveColumns.addActionListener(new ActionListener() {
+    btnRemoveColumn = new JButton("Remove Column");
+    btnRemoveColumn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (table.getSelectedColumn() != -1) {
@@ -300,7 +300,7 @@ public class MainWindow {
           // }
           updateWidgets();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please select a property.", "Deletion warning",
+          JOptionPane.showMessageDialog(frame, "Please select a column.", "Deletion warning",
               JOptionPane.WARNING_MESSAGE);
         }
       }
@@ -322,8 +322,8 @@ public class MainWindow {
     });
     btnAddRows.setEnabled(false);
     controlPanel.add(btnAddRows);
-    btnRemoveColumns.setEnabled(false);
-    controlPanel.add(btnRemoveColumns);
+    btnRemoveColumn.setEnabled(false);
+    controlPanel.add(btnRemoveColumn);
 
     // Remove Row(s) button
     btnRemoveRows = new JButton("Remove Row(s)");
@@ -484,9 +484,13 @@ public class MainWindow {
               case FileUtils.XML:
                 FileUtils.createXmlFileByStAX(fc.getSelectedFile(), table);
                 break;
+              case FileUtils.CSV:
+                FileUtils.createCsvFile(fc.getSelectedFile(), table);
+                break;
               default:
-                JOptionPane.showMessageDialog(frame, "Please give xml extension to the file",
-                    "Save warning", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Please give " + FileUtils.XML + " or "
+                    + FileUtils.CSV + " extension to the file", "Save warning",
+                    JOptionPane.WARNING_MESSAGE);
             }
             log.append("Saving: " + fc.getSelectedFile().getName() + "." + "\n");
           }
@@ -538,7 +542,7 @@ public class MainWindow {
     boolean hasColumn = table.getColumnCount() > 0;
     boolean hasRow = table.getRowCount() > 0;
     btnAddRows.setEnabled(hasColumn);
-    btnRemoveColumns.setEnabled(hasRow);
+    btnRemoveColumn.setEnabled(hasRow);
     btnRemoveRows.setEnabled(hasRow);
     chckbxRowSelection.setEnabled(hasRow);
     chckbxColumnSelection.setEnabled(hasRow);
