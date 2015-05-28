@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -25,11 +26,14 @@ import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
 import zoo.imaginary.util.ContentFilter;
 import zoo.imaginary.util.FileUtils;
 import zoo.imaginary.util.TableColumnAdjuster;
+import zoo.imaginary.util.XmlTagsAttritubes;
 
 public class MainWindow {
 
@@ -37,7 +41,7 @@ public class MainWindow {
   private JTable table;
   private JTextArea log;
   private JButton btnOpen;
-  private JButton btnAddProperty;
+  private JButton btnAddColumn;
   private JPanel controlPanel;
   private JCheckBox chckbxRowSelection;
   private JCheckBox chckbxColumnSelection;
@@ -45,9 +49,9 @@ public class MainWindow {
   private JTextField txtSearch;
   private JComboBox<String> searchComboBox;
   private JPanel logPanel;
-  private JButton btnDeleteProperty;
-  private JButton btnDeleteAnimal;
-  private JButton btnAddAnimal;
+  private JButton btnRemoveColumns;
+  private JButton btnRemoveRows;
+  private JButton btnAddRows;
   private TableRowSorter<TableModel> sorter;
   private JButton btnSave;
   private JCheckBox chckbxListAutoResize;
@@ -120,6 +124,9 @@ public class MainWindow {
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
+  /**
+   * Create split pane.
+   */
   private void createSplitPanel() {
     JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainPanel, logPanel);
     splitPane.setResizeWeight(0.8);
@@ -177,7 +184,7 @@ public class MainWindow {
   @SuppressWarnings({"rawtypes", "unchecked"})
   private void fillSearchCombo() {
     final TableModel tModel = (TableModel) table.getModel();
-    ComboBoxModel cbModel = new DefaultComboBoxModel<>(tModel.getColumnNames());
+    ComboBoxModel cbModel = new DefaultComboBoxModel<>(tModel.getColumnIdentifiers());
     searchComboBox.setModel(cbModel);
     sorter = new TableRowSorter<TableModel>(tModel);
     table.setRowSorter(sorter);
@@ -200,36 +207,97 @@ public class MainWindow {
     mainPanel.add(controlPanel, BorderLayout.EAST);
     controlPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
-    // Add button
-    btnAddProperty = new JButton("Add Property");
-    btnAddProperty.setEnabled(true);
-    btnAddProperty.addActionListener(new ActionListener() {
+    // Add Column button
+    btnAddColumn = new JButton("Add Column");
+    btnAddColumn.setEnabled(true);
+    btnAddColumn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (!(table.getModel() instanceof TableModel)) {
-          table.setModel(new TableModel());
+        createNewTableModel();
+        String columnName = JOptionPane.showInputDialog("Please enter the column name: ");
+        // create the family, subfamily, genus, entity columns if there are not exist
+        TableModel model = (TableModel) table.getModel();
+        if (!model.getColumnIdentifiers().contains(XmlTagsAttritubes.FAMILY_STR.getValue())) {
+          createColumn(XmlTagsAttritubes.FAMILY_STR.getValue());
         }
-        String columnName = JOptionPane.showInputDialog("Please enter the property name: ");
+        if (!model.getColumnIdentifiers().contains(XmlTagsAttritubes.SUBFAMILY_STR.getValue())) {
+          createColumn(XmlTagsAttritubes.SUBFAMILY_STR.getValue());
+        }
+        if (!model.getColumnIdentifiers().contains(XmlTagsAttritubes.GENUS_STR.getValue())) {
+          createColumn(XmlTagsAttritubes.GENUS_STR.getValue());
+        }
+        if (!model.getColumnIdentifiers().contains(XmlTagsAttritubes.ENTITY_STR.getValue())) {
+          createColumn(XmlTagsAttritubes.ENTITY_STR.getValue());
+        }
         if (columnName != null && !columnName.isEmpty()) {
-          ((TableModel) table.getModel()).addColumn(columnName);
+          if (!model.getColumnIdentifiers().contains(columnName)) {
+            ((TableModel) table.getModel()).addColumn(columnName);
+          } else {
+            JOptionPane.showMessageDialog(frame, "The given name already exists.",
+                "Creation error", JOptionPane.ERROR_MESSAGE);
+          }
+        } else {
+          JOptionPane.showMessageDialog(frame, "The given name can not be blank.",
+              "Creation error", JOptionPane.ERROR_MESSAGE);
         }
         updateWidgets();
       }
     });
-    controlPanel.add(btnAddProperty);
+    controlPanel.add(btnAddColumn);
 
-    // Delete Column button
-    btnDeleteProperty = new JButton("Delete Property");
-    btnDeleteProperty.addActionListener(new ActionListener() {
+    // Remove Column(s) button
+    btnRemoveColumns = new JButton("Remove Column(s)");
+    btnRemoveColumns.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (table.getSelectedColumn() != -1) {
           int[] selectedColumns = table.getSelectedColumns();
-          String[] deletableColumnNames = new String[selectedColumns.length];
-          for (int i = 0; i < selectedColumns.length; i++) {
-            deletableColumnNames[i] = table.getColumnName(selectedColumns[i]);
+          TableModel model = (TableModel) table.getModel();
+          TableColumnModel columnModel = table.getColumnModel();
+
+          TableColumn column = columnModel.getColumn(table.getSelectedColumn());
+          int columnModelIndex = column.getModelIndex();
+          Vector data = model.getDataVector();
+          Vector colIds = model.getColumnIdentifiers();
+
+          // Remove the column from the table
+          table.removeColumn(column);
+
+          // Remove the column header from the table model
+          colIds.removeElementAt(columnModelIndex);
+
+          // Remove the column data
+          for (int r = 0; r < data.size(); r++) {
+            Vector row = (Vector) data.get(r);
+            row.removeElementAt(columnModelIndex);
           }
-          ((TableModel) table.getModel()).deleteColumns(deletableColumnNames);
+          model.setDataVector(data, colIds);
+
+          // Correct the model indices in the TableColumn objects
+          // by decrementing those indices that follow the deleted column
+          // Enumeration<TableColumn> enum1 = table.getColumnModel().getColumns();
+          // for (; enum1.hasMoreElements();) {
+          // TableColumn c = enum1.nextElement();
+          // if (c.getModelIndex() >= columnModelIndex) {
+          // c.setModelIndex(c.getModelIndex() - 1);
+          // }
+          // }
+          model.fireTableStructureChanged();
+
+          // for (int i = 0; i < selectedColumns.length; i++) {
+          // String columnName = table.getColumnName(selectedColumns[i]);
+          // TableColumn tableColumn =
+          // columnModel.getColumn(columnModel.getColumnIndex(columnName));
+          // // hide the given column in the table
+          // columnModel.removeColumn(tableColumn);
+          // // remove from the given columnName from the columnName list
+          // // model.removeColumnName(columnName);
+          // // remove the underlying data of the given column from all rows
+          // for (int j = 0; j < model.getRowCount(); j++) {
+          // model.setValueAt(null, j, selectedColumns[i]);
+          // }
+          // model.printTableData();
+          // }
           updateWidgets();
         } else {
           JOptionPane.showMessageDialog(frame, "Please select a property.", "Deletion warning",
@@ -239,27 +307,27 @@ public class MainWindow {
     });
 
     // Add Row button
-    btnAddAnimal = new JButton("Add Animal");
-    btnAddAnimal.addActionListener(new ActionListener() {
+    btnAddRows = new JButton("Add Row");
+    btnAddRows.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (table.getColumnCount() > 0) {
           ((TableModel) table.getModel()).addRow(new Object[table.getColumnCount()]);
           enableDisableControls();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please add a property first.",
+          JOptionPane.showMessageDialog(frame, "Please add a column first.",
               "Entity creation warning", JOptionPane.WARNING_MESSAGE);
         }
       }
     });
-    btnAddAnimal.setEnabled(false);
-    controlPanel.add(btnAddAnimal);
-    btnDeleteProperty.setEnabled(false);
-    controlPanel.add(btnDeleteProperty);
+    btnAddRows.setEnabled(false);
+    controlPanel.add(btnAddRows);
+    btnRemoveColumns.setEnabled(false);
+    controlPanel.add(btnRemoveColumns);
 
-    // Delete Row button
-    btnDeleteAnimal = new JButton("Delete Animal");
-    btnDeleteAnimal.addActionListener(new ActionListener() {
+    // Remove Row(s) button
+    btnRemoveRows = new JButton("Remove Row(s)");
+    btnRemoveRows.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         System.out.println();
@@ -268,13 +336,13 @@ public class MainWindow {
           ((TableModel) table.getModel()).deleteRows(selectedRows);
           enableDisableControls();
         } else {
-          JOptionPane.showMessageDialog(frame, "Please select an animal.", "Deletion warning",
+          JOptionPane.showMessageDialog(frame, "Please select at least a row.", "Deletion warning",
               JOptionPane.WARNING_MESSAGE);
         }
       }
     });
-    btnDeleteAnimal.setEnabled(false);
-    controlPanel.add(btnDeleteAnimal);
+    btnRemoveRows.setEnabled(false);
+    controlPanel.add(btnRemoveRows);
 
     // Row Selection checkbox
     chckbxRowSelection = new JCheckBox("Row Selection");
@@ -317,6 +385,26 @@ public class MainWindow {
     chckbxListAutoResize.setEnabled(false);
     chckbxListAutoResize.setSelected(true);
     controlPanel.add(chckbxListAutoResize);
+  }
+
+  /**
+   * Create new table model if there is no one. Typically when is blank the table.
+   */
+  private void createNewTableModel() {
+    if (!(table.getModel() instanceof TableModel)) {
+      table.setModel(new TableModel());
+    }
+  }
+
+  /**
+   * Create a column int the table with the given name.
+   */
+  private void createColumn(String columnName) {
+    TableModel model = (TableModel) table.getModel();
+    if (!model.getColumnIdentifiers().contains(columnName)) {
+      model.addColumn(columnName);
+      log.append("The " + columnName + " is created." + "\n");
+    }
   }
 
   /**
@@ -372,21 +460,36 @@ public class MainWindow {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        JFileChooser fc = createFileChooser();
-        fc.setDialogTitle("Save Database");
+        TableModel model = (TableModel) table.getModel();
+        String familyValue = XmlTagsAttritubes.FAMILY_STR.getValue();
+        String subfamilyValue = XmlTagsAttritubes.SUBFAMILY_STR.getValue();
+        String genusValue = XmlTagsAttritubes.GENUS_STR.getValue();
+        String entityValue = XmlTagsAttritubes.ENTITY_STR.getValue();
 
-        int returnVal = fc.showSaveDialog(frame);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-          currentDirectory = fc.getCurrentDirectory();
-          switch (FileUtils.getExtension(fc.getSelectedFile())) {
-            case FileUtils.XML:
-              FileUtils.createXmlFileByStAX(fc.getSelectedFile(), table);
-              break;
-            default:
-              JOptionPane.showMessageDialog(frame, "Please give xml extension to the file",
-                  "Save warning", JOptionPane.WARNING_MESSAGE);
+        if (!model.getColumnIdentifiers().contains(familyValue)
+            || !model.getColumnIdentifiers().contains(subfamilyValue)
+            || !model.getColumnIdentifiers().contains(genusValue)
+            || !model.getColumnIdentifiers().contains(entityValue)) {
+          JOptionPane.showMessageDialog(frame, "Some of the required columns missing: "
+              + familyValue + ", " + subfamilyValue + ", " + genusValue + ", " + entityValue,
+              "Save warning", JOptionPane.WARNING_MESSAGE);
+        } else {
+          JFileChooser fc = createFileChooser();
+          fc.setDialogTitle("Save Database");
+
+          int returnVal = fc.showSaveDialog(frame);
+          if (returnVal == JFileChooser.APPROVE_OPTION) {
+            currentDirectory = fc.getCurrentDirectory();
+            switch (FileUtils.getExtension(fc.getSelectedFile())) {
+              case FileUtils.XML:
+                FileUtils.createXmlFileByStAX(fc.getSelectedFile(), table);
+                break;
+              default:
+                JOptionPane.showMessageDialog(frame, "Please give xml extension to the file",
+                    "Save warning", JOptionPane.WARNING_MESSAGE);
+            }
+            log.append("Saving: " + fc.getSelectedFile().getName() + "." + "\n");
           }
-          log.append("Saving: " + fc.getSelectedFile().getName() + "." + "\n");
         }
       }
 
@@ -434,9 +537,9 @@ public class MainWindow {
     // Enable/Disable widgets of the control panel
     boolean hasColumn = table.getColumnCount() > 0;
     boolean hasRow = table.getRowCount() > 0;
-    btnAddAnimal.setEnabled(hasColumn);
-    btnDeleteProperty.setEnabled(hasRow);
-    btnDeleteAnimal.setEnabled(hasRow);
+    btnAddRows.setEnabled(hasColumn);
+    btnRemoveColumns.setEnabled(hasRow);
+    btnRemoveRows.setEnabled(hasRow);
     chckbxRowSelection.setEnabled(hasRow);
     chckbxColumnSelection.setEnabled(hasRow);
     chckbxListAutoResize.setEnabled(hasRow);

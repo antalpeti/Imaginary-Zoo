@@ -42,16 +42,6 @@ public class TableModel extends DefaultTableModel {
   }
 
   @SuppressWarnings("unchecked")
-  public void deleteColumns(String[] deletableColumnNames) {
-    List<String> colNamesList = new ArrayList<>();
-    for (String colName : deletableColumnNames) {
-      colNamesList.add(colName);
-    }
-    columnIdentifiers.removeAll(colNamesList);
-    fireTableStructureChanged();
-  }
-
-  @SuppressWarnings("unchecked")
   public void deleteRows(int[] deletableRowIndexes) {
     // Put rows into a List to make it easier to delete
     List<Object> deletetableRows = new ArrayList<>();
@@ -59,7 +49,7 @@ public class TableModel extends DefaultTableModel {
       deletetableRows.add(getDataVector().get(deletableRowIndexes[i]));
     }
     getDataVector().removeAll(deletetableRows);
-    fireTableStructureChanged();
+    fireTableDataChanged();
   }
 
   @Override
@@ -67,7 +57,7 @@ public class TableModel extends DefaultTableModel {
     return String.class;
   }
 
-  public Vector<?> getColumnNames() {
+  public Vector<?> getColumnIdentifiers() {
     return columnIdentifiers;
   }
 }

@@ -56,11 +56,11 @@ public class FileUtils {
       xMLStreamWriter.writeStartDocument();
       xMLStreamWriter.writeStartElement("zoo");
 
-      int indexOfFamily = model.getColumnNames().indexOf(XmlTagsAttritubes.FAMILY_STR.getValue());
+      int indexOfFamily = model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.FAMILY_STR.getValue());
       int indexOfSubFamily =
-          model.getColumnNames().indexOf(XmlTagsAttritubes.SUBFAMILY_STR.getValue());
-      int indexOfGenus = model.getColumnNames().indexOf(XmlTagsAttritubes.GENUS_STR.getValue());
-      int indexOfEntity = model.getColumnNames().indexOf(XmlTagsAttritubes.ENTITY_STR.getValue());
+          model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.SUBFAMILY_STR.getValue());
+      int indexOfGenus = model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.GENUS_STR.getValue());
+      int indexOfEntity = model.getColumnIdentifiers().indexOf(XmlTagsAttritubes.ENTITY_STR.getValue());
 
       int[] rowIndexes;
       if (table.getSelectedRows().length > 0) {
@@ -74,17 +74,17 @@ public class FileUtils {
 
       for (int r : rowIndexes) {
         xMLStreamWriter.writeStartElement(XmlTagsAttritubes.FAMILY_STR.getValue());
-        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(),
-            (String) model.getValueAt(r, indexOfFamily));
+        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(), (String) (model
+            .getValueAt(r, indexOfFamily) == null ? "" : model.getValueAt(r, indexOfFamily)));
         xMLStreamWriter.writeStartElement(XmlTagsAttritubes.SUBFAMILY_STR.getValue());
-        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(),
-            (String) model.getValueAt(r, indexOfSubFamily));
+        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(), (String) (model
+            .getValueAt(r, indexOfSubFamily) == null ? "" : model.getValueAt(r, indexOfSubFamily)));
         xMLStreamWriter.writeStartElement(XmlTagsAttritubes.GENUS_STR.getValue());
-        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(),
-            (String) model.getValueAt(r, indexOfGenus));
+        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(), (String) (model
+            .getValueAt(r, indexOfGenus) == null ? "" : model.getValueAt(r, indexOfGenus)));
         xMLStreamWriter.writeStartElement(XmlTagsAttritubes.ENTITY_STR.getValue());
-        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(),
-            (String) model.getValueAt(r, indexOfEntity));
+        xMLStreamWriter.writeAttribute(XmlTagsAttritubes.NAME_STR.getValue(), (String) (model
+            .getValueAt(r, indexOfEntity) == null ? "" : model.getValueAt(r, indexOfEntity)));
 
         for (int c = 0; c < model.getColumnCount(); c++) {
           if (c != indexOfFamily || c != indexOfSubFamily || c != indexOfGenus
